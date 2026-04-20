@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { FutureRoutePlaceholder } from "@/components/marketing/FutureRoutePlaceholder";
+import { TrackOrderClient } from "@/components/track/TrackOrderClient";
 
 export const metadata: Metadata = {
   title: "Track your order status",
@@ -10,10 +10,5 @@ export const metadata: Metadata = {
 };
 
 export default function TrackOrderPage() {
-  return (
-    <FutureRoutePlaceholder
-      title="Order tracker"
-      description="The horizontal stepper will connect to your admin and customer success stack in phase two. WhatsApp remains the fastest escalation path today."
-    />
-  );
+  return <TrackOrderClient />;
 }
