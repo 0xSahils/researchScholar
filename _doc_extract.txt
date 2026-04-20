@@ -1,0 +1,1182 @@
+ResearchScholars.online
+Website Build — Full Project Document
+Phase 1  ·  Version 3.0  ·  EducateX Dark Green Theme
+8
+Frontend Pages
+65+
+Total Sections
+PHASE 1
+Scope (No Sub-pages)
+4
+Media Types
+PHASE 1 SCOPE: 8 pages built. Individual service sub-pages (Phase 2) deferred — unlocked when client upgrades. Blog page removed. Testimonials page removed — testimonial sections kept on Home and Scopus pages. All sections use premium UI components, not plain cards or text.
+AI AGENT NOTE: Read Section 4 (Premium Components) and Section 5 (Gemini Media Brief) BEFORE writing any code. Every section in this document has a designated component type and a corresponding media asset ID. Build components first, then wire in content.
+1. Project Overview & Brand System
+1.1 Identity
+Website
+researchscholars.online
+Tagline
+Structured Academic Support — Done Right. By PhD Scholars.
+Theme
+EducateX-inspired — Forest Green #1B5E20 + White + Gold highlights
+Primary CTA
+'Place Your Order →' — persistent across all pages
+Secondary CTA
+'Get Free Quote' / 'WhatsApp Us'
+Audience
+Masters students, PhD scholars, faculty — India
+Tone
+Expert, warm, authoritative — like a trusted senior PhD mentor
+Differentiator
+Every service by verified PhD scholars. Not freelancers. Not AI.
+1.2 Consistent Statistics (Use These Exact Numbers Everywhere)
+500+
+Academic projects completed
+94%
+Scopus-indexed journal acceptance rate
+30+
+Scopus papers published by our scholar network
+200+
+Researchers and students served
+20+
+Indian universities represented
+98%
+On-time delivery rate
+4.9 / 5
+Client satisfaction rating
+0%
+Plagiarism incident rate — Turnitin verified
+16+
+Years combined academic experience
+24 hrs
+Fastest assignment delivery
+45 days
+Average time to Scopus journal acceptance
+10+
+Subject domains with dedicated PhD scholars
+1.3 Phase 1 Page List
+Page 1
+Home — Landing page
+Page 2
+About Us — Team, story, trust
+Page 3
+Services Overview — All 6 services, pricing table
+Page 4
+Scopus Publication — Deep-dive premium page
+Page 5
+Research Support / The Academic Crisis — Problem + methodology
+Page 6
+Place Your Order — Conversion form
+Page 7
+Track My Order — Order status utility
+Page 8
+Contact Us — WhatsApp, form, FAQ
+Phase 2 (Locked)
+6 Individual Service Sub-pages — Unlocked when client upgrades
+Individual service sub-pages (thesis, dissertation, research paper, assignment, synopsis, scopus sub-page) are NOT in Phase 1 scope. The Services Overview page (Page 3) links to the Order page instead of individual service pages.
+2. Design System
+2.1 Color Palette
+#1B5E20 — Primary Dark Green
+Hero backgrounds, nav, major CTA buttons, section dividers
+#2D8C4E — Primary Medium Green
+Accent lines, icon backgrounds, hover states, links, tags
+#E8F5E9 — Primary Light Green
+Card backgrounds, strip fills, tag chips, alternate rows
+#0D2F17 — Deep Forest Green
+Footer, dark CTA banners, overlay backgrounds
+#FFFFFF — White
+Main page background, text on dark sections
+#212121 — Text Dark
+All headings and body text on light backgrounds
+#424242 — Text Mid
+Secondary body, descriptions, meta text
+#F9A825 — Gold Accent
+Star ratings, premium service labels, highlight badges
+#E65100 — Alert Orange
+Urgent CTAs, deadline warnings, Phase 2 lock badges
+#FAFAFA — Off-White
+Section alternating background to avoid stark white fatigue
+2.2 Typography
+Display (H1 Hero only)
+DM Serif Display 400 — for hero headlines only. Elegant academic authority.
+Headings (H2, H3, H4)
+Nunito Sans 700 — strong, modern, readable at all sizes
+Body / UI
+Inter 400 / 500 — clean, professional, universal readability
+Numbers / Stats
+JetBrains Mono 600 — monospace for counters gives technical precision look
+H1 Size
+60–68px desktop / 38–44px mobile
+H2 Size
+36–42px desktop / 26–30px mobile
+H3 Size
+22–26px — card titles, section sub-headers
+Body
+16–18px. Minimum 15px anywhere on site.
+Label / Eyebrow
+11–13px uppercase, letter-spacing 0.12em — section identifiers
+2.3 Spacing & Layout
+Section vertical padding
+100–120px desktop / 64–80px mobile
+Container max-width
+1200px centered. Side padding 24px mobile.
+Card border-radius
+14px — premium, not sharp, not bubbly
+Button border-radius
+6px — confident, professional
+Grid system
+CSS Grid. 3-col desktop, 2-col tablet, 1-col mobile.
+Shadow (card resting)
+0 4px 20px rgba(0,0,0,0.07)
+Shadow (card hover)
+0 12px 40px rgba(27,94,32,0.14)
+2.4 Motion & Animation Rules
+Page load stagger
+Hero elements enter with staggered fade+slide-up: badge → H1 → subtext → trust chips → buttons. Each 150ms apart.
+Scroll reveal
+IntersectionObserver at 15% threshold. Elements fade+slide-up (y:24px → 0, opacity:0→1). 400ms ease-out.
+Stats count-up
+requestAnimationFrame counter from 0 to target over 1800ms. Easing: cubic. Triggers once on viewport entry.
+Card hover
+translateY(-5px), shadow deepen, left border 3px green appears. 220ms cubic-bezier(0.4,0,0.2,1).
+Tab transitions
+Content fades out (100ms), new content fades in (200ms). No layout shift.
+Timeline steps
+Sequential reveal on scroll — each step fades in 200ms after the previous.
+Particle / ambient
+Subtle floating dots or grid pattern in hero — CSS only, no heavy canvas.
+DO NOT USE
+Parallax scroll, auto-carousels without controls, flicker/flash effects, heavy canvas animations.
+3. Page-by-Page Section Specifications
+Every section below includes: Layout type · Component type (see Section 4) · Media asset ID (see Section 5) · Full content · Design notes.
+── PAGE 1: HOME ──
+Primary landing page. 13 sections. Each section must move the visitor toward understanding, trust, or ordering. No section is decorative filler.
+S1 · Announcement Ticker Bar
+Component
+Marquee ticker — infinite left-scroll loop. CSS animation only (no JS). Pause on hover.
+Background
+Dark green #1B5E20. White text. 36px height.
+Content
+⭐ Welcome to ResearchScholars — Unlocking Academic Excellence!   |   500+ Projects Delivered   |   94% Scopus Acceptance Rate   |   PhD Scholar-Led Team   |   Free Quote in 30 Minutes   |   98% On-Time Delivery
+Right side
+LOGIN link — small, white, links to Track Order page
+S2 · Navbar
+Logo
+ResearchScholars wordmark — dark green on white bg. White version on dark sections.
+Links
+Home · About · Services (mega dropdown) · Scopus Publication · Research Support · Contact
+Services Dropdown
+Mega menu: 6 service names with icons + 'View All Services →' footer link. No sub-pages in Phase 1 — all link to Services Overview page.
+Right CTA
+Persistent filled green button: 'Place Your Order →'. Never hidden, never collapsed.
+Sticky
+After 80px scroll: white bg appears with subtle shadow, green accent line bottom.
+Mobile
+Hamburger icon. Full-screen slide-in drawer from right. All links, WhatsApp icon prominent.
+Media asset
+NONE — pure CSS/JS component
+S3 · Hero — Split Layout Full Width
+Component type
+Split hero — 55% text left, 45% image right. Image inside decorative green diagonal/curved clip shape (EducateX style).
+Pre-headline
+Chip badge: 'PhD SCHOLAR-LED SUPPORT' — green fill, white text, small icon
+H1 Line 1
+Structured Academic Support —
+H1 Line 2
+Done Right. By PhD Scholars.
+H1 Typography
+Line 1: DM Serif Display, dark. Line 2 'PhD Scholars' in forest green — this line has typewriter animation effect
+Subtext
+Assisting masters students, PhD researchers and academics with thesis writing, research papers, dissertations and Scopus-indexed journal publications. 0% plagiarism. On time. Always.
+Trust chips
+4 chips in row: ✓ 100% Original Work   ✓ 94% Scopus Acceptance   ✓ PhD Scholar-Led   ✓ 4.9/5 Rating
+Buttons
+Primary: 'Get a Free Quote →' (filled green). Secondary: 'View All Services' (outlined)
+Image right
+→ MEDIA ASSET: IMG-01 (see Section 5). Clip-path green shape overlay. Badge overlay on image: '500+ Projects Delivered' with animated pulse dot.
+Background
+Very subtle diagonal grid pattern, near-white. Green gradient blob bottom-left at 4% opacity.
+Load animation
+badge (0ms) → H1 line 1 (150ms) → H1 line 2 typewriter (300ms) → subtext (500ms) → chips (650ms) → buttons (800ms)
+Scroll CTA
+Animated chevron-down below buttons. Smooth scroll to next section.
+S4 · Three Feature Strips
+Component type
+3-column icon strip. Thin vertical dividers. Off-white background #FAFAFA.
+Strip 1
+📄 Research & Writing — PhD-led writing for all university levels. From assignments to full doctoral dissertations. Formatted to your institution's exact standard.
+Strip 2
+🌐 Scopus Journal Publication — End-to-end support from manuscript prep to journal acceptance. 94% success rate across 30+ published papers.
+Strip 3
+✅ 0% Plagiarism Guarantee — Every document verified through Turnitin/iThenticate before delivery. Full originality certificate included.
+Icon style
+Each icon: 48px, white on circular green background. Not flat emoji — use Phosphor or Lucide icon library.
+Entry animation
+3 strips animate in left-to-right with 120ms stagger on scroll entry
+S5 · Who We Are — About Introduction
+Component type
+Two-column section. Image collage left, text content right. Alternating on mobile (text top, image below).
+Image left
+→ MEDIA ASSET: IMG-02 (2-image stacked collage). Badge overlay: '16+ Years Combined Academic Experience' in white chip with green border.
+Eyebrow label
+ABOUT US — green uppercase 12px
+Heading
+Who We Are — India's Premier PhD-Led Academic Research Support Platform
+Para 1
+ResearchScholars.online was built by a team of PhD scholars who saw firsthand how talented students were failing — not because of their research, but because of gaps in academic writing, publication know-how, and structured guidance. We built the support system we wish we'd had.
+Para 2
+Every service we offer is handled exclusively by verified PhD scholars in your specific subject domain. Not generic writers, not AI-generated content, not outsourced freelancers. Scholars who have written, reviewed and published in the same journals your work is targeting.
+Checklist items
+✓ PhD Expert Team — Engineering, Medicine, Management, Law, Life Sciences and 6 more   ✓ University-standard formatting — APA 7, MLA 9, IEEE, Harvard, Chicago, Vancouver   ✓ Scopus and UGC journal expertise   ✓ Free revisions until fully satisfied
+WhatsApp line
++91 XXXXX XXXXX — click to WhatsApp directly (with phone icon)
+Trust mini-card
+Floating card on image: 'Trusted by 200+ Researchers' — white bg, green border, small avatar stack
+CTA
+'More About Us →' outlined green button
+S6 · Stats Counter Strip
+Component type
+BENTO-STYLE stats grid — not a boring flat strip. 5 stat boxes in an asymmetric grid layout (2 large + 3 small, or 5 equal on desktop). Dark green #1B5E20 background.
+Decorative
+Subtle diagonal line pattern overlay at 8% opacity. Geometric green-on-green texture.
+Stat 1
+500+ | Academic Projects Completed
+Stat 2
+200+ | Researchers Served
+Stat 3
+30+ | Scopus Papers Published
+Stat 4
+94% | Journal Acceptance Rate
+Stat 5
+98% | On-Time Delivery
+Number typography
+JetBrains Mono Bold, 56px, white. Unit in medium green (#2D8C4E). Label Inter 13px, light green opacity 70%.
+Animation
+Count-up on viewport entry. requestAnimationFrame, 1800ms, ease-out cubic. Triggers once only.
+Mobile
+2-column grid. No horizontal scroll.
+S7 · The Academic Challenge — Curiosity Trigger
+Component type
+DARK SECTION with problem cards in 2-column grid. This is the emotional hook. Purpose: name every pain the reader has felt. Make them feel understood before selling anything.
+Background
+#0D2F17 deep forest green. Subtle noise texture overlay.
+Image/Visual
+→ MEDIA ASSET: IMG-03 (frustrated student). Positioned top-right as large faded ghost image, low opacity.
+Eyebrow
+THE ACADEMIC CHALLENGE — white uppercase
+Heading
+You Are Capable of World-Class Research.
+So Why Is the System Working Against You?
+Sub-data line
+India produces 1.5 million PhD scholars annually. Fewer than 2% ever publish internationally. That is not a talent problem. That is a system problem.
+Card 1
+🔴 Thesis Structure Failures — Universities assign a thesis without teaching thesis structure. What depth is required for a literature review? How many chapters? What do reviewers actually check?
+Card 2
+🔴 Journal Rejection Loops — 68% of first journal submissions are rejected. Wrong journal selection, wrong format, weak abstract, insufficient literature coverage.
+Card 3
+🔴 Invisible Deadline Pressure — Balancing coursework, research, teaching duties and family while producing a 50,000-word thesis to publication standard is genuinely impossible alone.
+Card 4
+🔴 No PhD Mentor Access — Most Indian universities have a 1:15 supervisor-to-student ratio. Deep individual mentoring is an exception, not the standard.
+Card 5
+🔴 Plagiarism Risk — Accidental plagiarism from poor paraphrasing and citation gaps can terminate a degree or disqualify a publication permanently.
+Card 6
+🔴 Publication Mystery — 4,500+ predatory journals falsely claim Scopus or UGC indexing. Most researchers cannot tell legitimate from fake.
+Card design
+Dark card bg (#1a3d22), red left border 3px, white heading, grey-white body text, red dot icon
+CTA
+'See How We Solve This →' — links to Research Support page. White outlined button.
+Data note
+Fine print: Stats sourced from Elsevier editorial data and UGC research reports.
+S8 · Our Services — Tabbed with Image Cards
+Component type
+LEFT SIDEBAR TAB NAV + right content area. NOT a plain grid of cards. Interactive tabs by audience type. Each tab shows relevant service cards with images.
+Eyebrow
+OUR SERVICES
+Heading
+Comprehensive Academic Support — At Every Stage of Your Journey
+Tab 1
+For Undergraduate Students → Assignments, Research Papers, Project Reports
+Tab 2
+For Postgraduate Students → Thesis Writing, Dissertations, Research Papers, Synopsis
+Tab 3
+For PhD Scholars → Synopsis, Thesis Chapters, Research Papers, Scopus Publication
+Tab 4
+For Faculty & Researchers → Research Papers, Manuscript Editing, Scopus Publication
+Service card structure
+→ MEDIA ASSET: IMG-04 to IMG-09 (one per service). Each card: Full-height image top half + category chip + title + 1 stat badge + 2-line description + 'Get a Quote →' button. Image bleeds to card edge (no padding on image).
+Card image treatment
+Dark green gradient overlay on bottom 40% of image so text is readable
+Phase 2 lock badge
+Small orange 'Phase 2' badge on individual service page links — they link to Order page in Phase 1
+Active tab style
+Filled green pill. Content transition: fade (100ms out, 200ms in).
+S9 · How It Works — Animated Timeline
+Component type
+HORIZONTAL CONNECTED TIMELINE — 3 steps with animated connector line that draws progressively as user scrolls (SVG path animation). NOT a list.
+Eyebrow
+HOW IT WORKS
+Heading
+From Requirement to Delivery — 3 Simple Steps
+Step 1
+📝 Share Requirements
+Fill our order form or WhatsApp us your topic, deadline, university name and any specific guidelines. Takes 3 minutes. Average response: within 1 hour.
+Step 2
+🎓 PhD Expert Assigned
+A PhD scholar from your exact subject domain is matched and begins same day. Subject-specific, every time. No generalists.
+Step 3
+✅ Receive & Submit
+Completed, Turnitin-verified document delivered to your email on or before deadline. Free revisions included. Turnitin certificate attached.
+Connector
+SVG animated line connecting circles. Draws left-to-right as section enters viewport.
+Below steps
+4-item trust strip: 🔒 Fully Confidential   |   📄 Plagiarism Certificate Included   |   🔄 Free Revisions   |   ⚡ Urgent Orders Welcome
+Background
+Clean white. Step numbers in large ghosted green (opacity 5%) as decorative backdrop.
+S10 · Why Choose Us — Feature Section with Image
+Component type
+TWO-COLUMN FEATURE SECTION — sticky image left (stays fixed while text scrolls on desktop), feature list right. Premium 'scroll-sticky' layout.
+Image
+→ MEDIA ASSET: IMG-10. Sticky positioned on desktop.
+Eyebrow
+WHY CHOOSE US
+Heading
+Not Just Writers — PhD Scholars Who Live Academic Excellence Every Day
+Body
+Our team does not just 'write' — they research, publish, and know exactly what your professor, committee and journal reviewer is looking for.
+Feature 1
+🟢 Verified PhD Scholar Team — Each expert holds a relevant doctoral degree and an active research portfolio. Credentials verified before onboarding.
+Feature 2
+🟢 University-Standard Quality — We match your institution's specific formatting, research depth and citation requirements. Not a generic template.
+Feature 3
+🟢 Scopus & UGC Journal Expertise — Deep familiarity with indexed journal standards, peer review criteria and manuscript structure.
+Feature 4
+🟢 0% Plagiarism — Guaranteed. Verified via Turnitin/iThenticate. Certificate provided with every delivery.
+Feature 5
+🟢 On-Time Delivery — 98% on-time rate across 500+ projects. Urgent 24-hour delivery available.
+Feature 6
+🟢 Free Revisions — Until you are 100% satisfied. No argument, no extra cost.
+Feature 7
+🟢 Complete Confidentiality — Your identity, topic and documents are never disclosed to any third party.
+S11 · University & Journal Logos Strip
+Component type
+AUTO-SCROLLING LOGO MARQUEE — infinite horizontal scroll. Two rows: top row scrolls left, bottom row scrolls right (opposite direction creates premium feel). Pause on hover.
+Logos
+IIT (generic academic icon + text), IIM, Elsevier (publisher logo), Scopus wordmark, UGC India, Springer, Wiley, NAAC, Anna University, Osmania University
+Treatment
+Logos at 45% opacity grayscale by default. Full color + full opacity on hover. Smooth 300ms transition.
+Label
+'Trusted by researchers from' — centered above strip in small grey uppercase
+Background
+Off-white #FAFAFA. Thin top and bottom border in #E0E0E0.
+S12 · Testimonials — Staggered Card Layout
+Component type
+MASONRY-STYLE TESTIMONIAL CARDS — not a uniform grid. Cards have different heights based on quote length. This looks real and human, not AI-generated. 3 cards across on desktop.
+Eyebrow
+WHAT OUR CLIENTS SAY
+Heading
+Real Researchers. Real Results. Real Words.
+Card 1
+→ MEDIA ASSET: IMG-11A (South Asian female student). Priya S. | M.Tech Student | NIT Surathkal | ★★★★★ | 'I had submitted my thesis draft and it came back with 14 revision comments from my supervisor. The team restructured my methodology chapter and literature review entirely. Supervisor approved it on the next review with no further changes.' | Tag: Thesis Writing
+Card 2
+→ MEDIA ASSET: IMG-11B (South Asian male professor). Dr. Arjun M. | Assistant Professor | Amrita University | ★★★★★ | 'My paper had been rejected twice from different journals. ResearchScholars identified exactly what was wrong — weak abstract and insufficient discussion linkage. They rewrote both sections. Accepted by a Scopus Q2 journal within 6 weeks of resubmission.' | Tag: Scopus Publication
+Card 3
+→ MEDIA ASSET: IMG-11C (South Asian female MBA student). Kavitha R. | MBA Final Year | Symbiosis Institute | ★★★★★ | 'I needed a full dissertation in 12 days including data analysis. They assigned a management PhD scholar within hours. Delivered a 22,000-word dissertation 2 days before my deadline, formatted exactly to Symbiosis guidelines.' | Tag: Dissertation
+Card design
+White card, 14px radius, resting shadow. Photo in circle (48px) top-left. Stars in gold (#F9A825). Quote in Inter italic 16px. Service tag at bottom, green chip. Different card heights = organic/real look.
+Quote marks
+Large decorative opening quote mark in green at very low opacity — behind the quote text
+S13 · Bottom CTA Banner
+Component type
+FULL-WIDTH DARK GRADIENT BANNER with glassmorphism effect on button. High contrast.
+Background
+Dark green linear gradient. → MEDIA ASSET: VID-01 (looped background video, very low opacity overlay). Fallback: gradient if video doesn't load.
+Heading
+Your Academic Journey Begins Here — Get Expert Support Today
+Sub-text
+Join 200+ researchers and students who trusted ResearchScholars.online to deliver quality, on time, every time.
+Button 1
+'Place Your Order →' — white fill, dark green text, subtle hover glow
+Button 2
+'WhatsApp Us Now' — outlined white, WhatsApp icon left
+Decorative
+Large ghosted 'ResearchScholars' watermark text, 3% opacity, behind content
+S14 · Footer
+Layout
+4-column dark footer (#0D2F17). Top section columns + bottom copyright bar.
+Col 1
+Logo + tagline + 2-sentence about + social icons: LinkedIn, Instagram, WhatsApp
+Col 2
+Quick Links: Home, About, Services, Scopus Publication, Research Support, Contact, Place Your Order
+Col 3
+Our Services: Thesis Writing, Dissertations, Research Papers, Assignments, Synopsis Writing, Scopus Publication
+Col 4
+Contact: WhatsApp number (clickable), Email (clickable), Working Hours Mon–Sat 9am–9pm IST
+Bottom bar
+Copyright © 2025 ResearchScholars.online · Plagiarism Policy · Privacy Policy · Terms of Service
+Design
+Column headings in medium green. Links in light grey, green on hover. Thin green divider between main and bottom bar.
+── PAGE 2: ABOUT US ──
+Must feel personal and genuine. Real people. Real story. Not corporate boilerplate.
+S1 · Page Hero Banner
+Component type
+DARK FULL-WIDTH BANNER with breadcrumb and centered content. → MEDIA ASSET: IMG-12 (library background, low opacity overlay).
+Heading
+The Team Behind the Research — Meet ResearchScholars
+Sub-text
+We did not build this to sell a service. We built it because we watched too many talented students fail systems that were never designed to help them succeed.
+S2 · Our Story — Text + Collage
+Component type
+Two-column: large paragraph block left, image collage right.
+Image
+→ MEDIA ASSET: IMG-13 (3-image collage: scholar presenting, reviewing manuscript, at computer). Year badge: 'Since 2008'.
+Para 1
+ResearchScholars.online was founded by a group of PhD scholars and academic researchers who had spent years navigating the same broken systems their students struggled with — opaque thesis guidelines, unclear journal submission processes, and complete absence of structured PhD mentorship for working students.
+Para 2
+What started as informal guidance — helping batchmates structure their thesis, reviewing papers for colleagues, advising on journal selection — grew into a full-service academic support platform with a verified team of PhD scholars across 10+ subject domains.
+Para 3
+Today we serve masters students, doctoral scholars and academic faculty across India. Every piece of work we deliver carries the same standard we would hold our own published research to: rigorous, original, on time, formatted to exact specification.
+S3 · Mission & Vision — Split Cards
+Component type
+TWO LARGE FEATURE CARDS side by side. NOT plain text columns. Left card: green border + icon. Right card: dark green fill + white text.
+Mission
+Our Mission: To make world-class PhD-led academic support accessible to every student, researcher and academic professional in India — regardless of institutional resources or mentorship access.
+Vision
+Our Vision: To become India's most trusted academic research support platform — known not just for delivering quality documents but for transforming how Indian researchers engage with global academic publication.
+S4 · Stats Counter Strip
+Content
+Same bento-style dark strip as homepage. 500+ Projects · 30+ Scopus · 98% On-Time · 200+ Clients · 4.9/5 Rating.
+S5 · Meet the Team — Expert Cards
+Component type
+4 CARDS — large circular photo + name + PhD qualification + subject domain + 1 published-paper stat + LinkedIn icon. HOVER: card flips (CSS 3D flip) to show brief bio on back.
+Image treatment
+→ MEDIA ASSET: IMG-14A/B/C/D — 4 professional headshots of South Asian academics. Circle crop.
+Expert 1
+Dr. [Name] | PhD — Mechanical Engineering | IIT Background | 12+ years research, 8 Scopus publications
+Expert 2
+Dr. [Name] | PhD — Management Sciences | 20+ case studies, 6 Scopus publications
+Expert 3
+Dr. [Name] | PhD — Life Sciences / Medicine | Peer reviewer for 3 Scopus journals, 30+ papers
+Expert 4
+Dr. [Name] | PhD — Computer Science & AI | Published at IEEE, Springer and Elsevier
+Note
+If client cannot provide real photos, use high-quality professional stock headshots of South Asian academics. NEVER avatars or illustrations for team section.
+S6 · Our Values — Icon Cards
+Component type
+3×2 GRID of value cards. Each: Large animated icon (Lottie or CSS animated SVG) + bold title + 2-sentence description. On hover: card bg fills with light green.
+Value 1
+⚖️ Academic Integrity — We operate within the ethical boundaries of academic support. Every document is your original work, structured and enhanced by our experts.
+Value 2
+📄 Originality Always — Plagiarism is never acceptable. Every document passes Turnitin before delivery. We do not copy, repurpose or recycle.
+Value 3
+🔒 Absolute Confidentiality — Your identity, topic and university are never shared, stored beyond necessity or disclosed to any third party.
+Value 4
+⏰ On-Time Every Time — A deadline is a commitment. 98% on-time delivery across 500+ projects.
+Value 5
+🎓 Quality Over Volume — We don't take every order. Subject-matched experts only. No generalists.
+Value 6
+🤝 Student-First Always — When something isn't right, we fix it. Free revisions, responsive support, direct WhatsApp to your assigned scholar.
+S7 · Why Trust Us — Credibility Bar
+Component type
+4-BLOCK HORIZONTAL BAR on light green bg. Each block: large icon + bold stat + 1-line explanation. Separated by thin vertical lines.
+Block 1
+0% Plagiarism Incidents — Across all 500+ projects. Turnitin-verified.
+Block 2
+100% PhD Scholar Experts — Zero freelancers. Zero generalists. Verified credentials.
+Block 3
+94% Scopus Acceptance — Our journal submission success rate vs industry average under 40%.
+Block 4
+University-Standard Matched — Formatted to YOUR institution's specific guidelines, not a generic template.
+S8 · CTA
+Heading
+Ready to work with India's most trusted academic research team?
+Buttons
+'Place Your Order →' + 'View Our Services'
+── PAGE 3: SERVICES OVERVIEW ──
+Primary services hub. Structure around the USER's journey not a features list. All 6 service cards link to Order page in Phase 1. Phase 2 badge shown on cards.
+S1 · Page Hero
+Component type
+Dark hero banner. → MEDIA ASSET: IMG-15.
+Heading
+Comprehensive Academic Support — At Every Stage of Your Research Journey
+Sub-text
+Whether you are submitting your first university assignment or targeting a Scopus-indexed journal — we have a PhD scholar for every stage.
+S2 · Who We Serve — Audience Tabs
+Component type
+HORIZONTAL PILL TABS. Tab click shows description + relevant services. Tabs: Undergraduate / Postgraduate / PhD Scholars / Faculty & Researchers. Active tab: filled green.
+S3 · 6 Service Cards — Image + Detail
+Component type
+3×2 GRID of IMAGE-LED CARDS. Each card: full-bleed image top (not icon) + category chip + title + key stat badge + 3-line description + CTA.
+Card 1
+→ IMG-04 | THESIS WRITING | 200+ Delivered | Masters and doctoral thesis — full chapter structure, lit review, methodology, results, bibliography. University formatting matched. | 'Get a Free Quote →'
+Card 2
+→ IMG-05 | DISSERTATIONS | 98% On-Time | PhD-level subject-specific dissertations. In-depth research design, data analysis support, full bibliography. | 'Get a Free Quote →'
+Card 3
+→ IMG-06 | RESEARCH PAPERS | Journal-Ready | Full manuscripts in APA 7, MLA 9, IEEE, Harvard, Chicago, Vancouver. Structured for Scopus, UGC or university journals. | 'Get a Free Quote →'
+Card 4
+→ IMG-07 | ASSIGNMENTS | 24hr Urgent Available | Subject-expert help, any topic, any word count, originality certificate included. | 'Get a Free Quote →'
+Card 5
+→ IMG-08 | SYNOPSIS WRITING | Committee Format | Research proposal for university ethics committees. Objectives, methodology, expected outcomes. | 'Get a Free Quote →'
+Card 6
+→ IMG-09 | SCOPUS PUBLICATION | 94% Acceptance | Journal selection → manuscript → cover letter → submission → revision → acceptance. | 'Learn More →' (links to Scopus page)
+Phase 2 label
+Small orange pill on each card: 'Detailed page coming soon' — friendly, not 'locked'
+S4 · Academic Standards We Follow
+Component type
+SCROLLING BADGE ROW — 8 citation standard chips in a horizontally scrollable row. Each chip: style name + small icon + hover tooltip with description.
+Standards
+APA 7 · MLA 9 · Harvard · IEEE · Chicago 17 · Vancouver · UGC Guidelines · Scopus Standards
+Supporting text
+Our scholars are trained in all major international academic citation and formatting standards. If your institution has a custom style guide, we will format to it exactly.
+S5 · Transparent Pricing Table
+Component type
+STYLED TABLE with alternating row shading. 5 columns: Service | Starting Price | What's Included | Delivery Time | CTA Button. Header row: dark green fill, white text.
+Row 1
+Thesis Writing | From ₹X,XXX | Full chapter writing + formatting + plagiarism check | 7–15 days | Order Now
+Row 2
+Dissertations | From ₹X,XXX | In-depth research + data support + formatting | 10–20 days | Order Now
+Row 3
+Research Papers | From ₹X,XXX | Journal manuscript + citations | 3–7 days | Order Now
+Row 4
+Assignments | From ₹XXX | Subject expert + urgent available | 24–48 hours | Order Now
+Row 5
+Synopsis | From ₹X,XXX | Proposal structure + committee format | 3–5 days | Order Now
+Row 6
+Scopus Publication | Get Quote | Full submission support + journal selection | 15–45 days | Contact Us
+Footer note
+Prices shown are indicative starting rates. Final quote depends on word count, subject complexity, and deadline. Free quote within 1 hour.
+S6 · CTA
+Heading
+Not Sure Which Service You Need?
+Text
+WhatsApp us your requirement — we'll guide you to the right service and match you with the right scholar within 30 minutes.
+Buttons
+'WhatsApp Us Now →' + 'Place Your Order'
+── PAGE 4: SCOPUS PUBLICATION ──
+Highest-value page. Educate first, sell second. Elsevier/Springer-level editorial authority.
+S1 · Hero
+Component type
+Split hero — text left, visual right. → MEDIA ASSET: ILL-01 (editorial illustration of journal pages, citation network, global map).
+Heading
+From Research to Recognition — Scopus Journal Publication Support
+Sub-text
+Getting into a Scopus-indexed journal is the most powerful step for your academic career. But 68% of first submissions are rejected. We make sure yours isn't.
+Badge
+'94% Acceptance Rate — Verified across 30+ papers' — green filled badge
+S2 · What is Scopus? — Educational Section
+Component type
+EDITORIAL LONG-FORM SECTION — alternates text blocks with comparison table and warning callout box. This is NOT a card grid.
+Para 1
+Scopus is the world's largest abstract and citation database of peer-reviewed literature, published by Elsevier. As of 2024, it indexes over 27,000 peer-reviewed journals across science, technology, medicine, social sciences, and humanities.
+Para 2
+For Indian researchers, Scopus indexing is increasingly critical. UGC guidelines now mandate Scopus publications for faculty promotions, PhD completion requirements and research grant eligibility.
+Para 3
+Scopus is not a publisher — it is a curating body. A journal must meet strict criteria including quality of peer review, publication ethics, editorial standards and citation impact to be listed.
+Comparison table
+3-column: Scopus vs UGC Care List vs Predatory Journals. Rows: International recognition / Peer review quality / Career impact / Citation tracking / Verification link.
+Warning callout
+⚠️ BEWARE OF PREDATORY JOURNALS: Thousands falsely claim Scopus indexing. Always verify at scopus.com/sources. Our team pre-verifies every journal we recommend.
+S3 · Why Submissions Get Rejected — Data Section
+Component type
+HORIZONTAL BAR CHART VISUAL — each rejection reason shown as a percentage bar (CSS animated on scroll). Not a list. Visual impact.
+Heading
+Why 68% of Journal Submissions Are Rejected — And How to Avoid Every One
+Data header
+Based on analysis of 500+ submission outcomes across Elsevier, Springer and Wiley journals
+Reason 1
+Poor Manuscript Structure — 31%
+Reason 2
+Wrong Journal Selection — 24%
+Reason 3
+Formatting Non-Compliance — 18%
+Reason 4
+Weak Abstract — 15%
+Reason 5
+Citation and Reference Issues — 12%
+Each bar
+Has 1-sentence explanation on hover. Green fill color, animated width on scroll entry.
+Closing line
+Our team addresses each of these systematically. We don't just 'write' — we engineer for acceptance.
+S4 · 7-Step Publication Process — Vertical Timeline
+Component type
+VERTICAL TIMELINE with alternating left/right cards. Each step has icon + title + 2-sentence explanation + estimated time. Connector line animates as user scrolls down.
+Step 1
+📋 Journal Selection Analysis | 3–5 optimal Scopus journals identified and pre-verified. Predatory and high-rejection-rate journals filtered out. | 1–2 days
+Step 2
+✏️ Manuscript Preparation | Full manuscript written or restructured to IMRaD standard, correct academic register, evidence-based arguments, proper citation. | 5–14 days
+Step 3
+📐 Formatting & Compliance | Formatted exactly to target journal author guidelines — margins, font, tables, figures, references. Submission checklist matched 100%. | 1–2 days
+Step 4
+✉️ Cover Letter Writing | Compelling cover letter addressing editor directly, explaining significance and confirming no prior publication. Poor letters cause desk rejection. | 1 day
+Step 5
+🚀 Submission | Full submission handled through the journal's editorial management system (ScholarOne, Editorial Manager, OJS). | 1 day
+Step 6
+📬 Revision Response | Detailed response letter addressing each reviewer comment. Manuscript revised accordingly. This stage determines final acceptance. | 3–7 days
+Step 7
+🏆 Acceptance & Publication | Proof corrections, final formalities, publication. Your name. Your research. Global recognition. | Journal dependent
+S5 · Success Stats — Dark Strip
+Content
+Same bento stat grid style as homepage. Stats: 30+ Papers Published · 94% Acceptance · 15+ Subject Fields · 45 Days Average · 0 Retractions.
+S6 · Testimonials — Scopus Specific
+Component type
+2 WIDE CARDS — alternating dark/light. More text than homepage testimonial cards. Researcher-specific context.
+Card 1
+→ IMG-16A | Dr. Ramesh K. | PhD Mechanical Engineering | VIT University | ★★★★★ | Paper on thermal analysis rejected once. ResearchScholars identified weak abstract and methodology gap. Restructured both. Resubmitted to a more appropriate Q3 Scopus journal. Accepted in 38 days. First international publication achieved. | Scopus Publication
+Card 2
+→ IMG-16B | Dr. Sunita P. | Faculty, Pharmacy | Manipal University | ★★★★★ | Needed Scopus publication for promotion. What I had failed to do alone for 8 months was done in 6 weeks. Journal selection, discussion rewrite, full submission handled. Accepted. Promotion approved. | Scopus Publication
+S7 · FAQ — Accordion
+Component type
+ACCORDION — click to expand/collapse. One open at a time. Smooth height transition.
+Q1
+What journals do you target? → Legitimate Scopus Q1–Q4 journals appropriate to your research scope. Shortlist shared with you before submission.
+Q2
+Do you guarantee acceptance? → No honest service can guarantee acceptance. We guarantee the highest quality manuscript to maximise your chance. Our 94% success rate is the evidence.
+Q3
+How long does the full process take? → 30–90 days from manuscript preparation to acceptance, depending on journal review speed and revision rounds.
+Q4
+What do I need to provide? → Your research data, findings and a description of your study. We handle writing, structuring, formatting and submission.
+Q5
+Is my name on the paper? → Yes. Always. You are the author. We are the support team.
+S8 · CTA
+Heading
+Ready to Get Your Research Published?
+Buttons
+'Start Publication Journey →' + 'WhatsApp for Free Consultation'
+── PAGE 5: RESEARCH SUPPORT / THE ACADEMIC CRISIS ──
+Most strategically important page. Make the reader feel deeply understood. Problem first, solution second. Should create urgency to order.
+S1 · Hero — The Provocation
+Component type
+DARK FULL-WIDTH HERO with large typographic headline and animated data visual.
+→ Media
+MEDIA ASSET: ILL-02 (abstract data visualization — rejection funnel, publication gap).
+Heading
+The Academic Gap — And Why It Is Not Your Fault
+Sub-text
+India produces 1.5 million PhD scholars annually. Yet fewer than 2% ever publish in an internationally indexed journal. That is not a talent crisis. That is a system crisis.
+Visual element
+Large animated circle: 98% grey (never publish) / 2% green (publish). Draws on page load.
+S2 · The Numbers — Data Shock Section
+Component type
+LARGE TYPOGRAPHIC STATS SECTION — each number displayed at 80–100px, not as a counter strip. Each stat has 1-line context. Dark section.
+Stat 1
+68% — of journal submissions to Scopus-indexed journals rejected first round (Elsevier editorial data)
+Stat 2
+40% — of postgraduate thesis submissions in India require major revision due to structure/formatting
+Stat 3
+2% — of Indian researchers ever achieve international publication in their career
+Stat 4
+4,500+ — predatory journals in India falsely claiming Scopus or UGC indexing
+Stat 5
+1 in 6 — PhD students in India has regular access to a research mentor who actively publishes
+S3 · Six Invisible Barriers — Deep Dive
+Component type
+EXPANDABLE ACCORDION CARDS — 6 problem cards, each with a click-to-expand deeper explanation. Closed state shows title + 1 line. Open state shows 4–5 lines. Progressive disclosure builds curiosity.
+Barrier 1
+THE STRUCTURE PROBLEM — Most universities assign a thesis without ever teaching thesis structure. What depth for lit review? How many chapters? What does a committee actually check? This critical knowledge gap is never formally addressed.
+Barrier 2
+THE JOURNAL MAZE — 40,000+ journals claim academic credibility. Fewer than 27,000 are in Scopus. Thousands are predatory. Finding the right journal for your specific research, at the right impact level, with realistic acceptance odds, requires insider knowledge students don't have.
+Barrier 3
+THE TIME TRAP — PhD students operate under crushing constraints: teaching, coursework, family, and research compete for the same hours. Writing a 50,000-word thesis to publication standard while doing everything else is genuinely impossible without structured support.
+Barrier 4
+THE MENTOR GAP — Indian universities average a 1:15 supervisor-to-student ratio. Deep, individualised mentoring is an exception, not the standard. Most PhD students navigate the entire journey with minimal personalised guidance.
+Barrier 5
+THE LANGUAGE BARRIER — Academic English is its own dialect. Passive voice, hedging language, citation conventions, IMRaD structure — technical skills rarely taught but absolutely required. Brilliant research in incorrect academic register will be rejected.
+Barrier 6
+THE PLAGIARISM TRAP — Accidental plagiarism from poor paraphrasing and citation gaps are academic integrity violations that can terminate a degree or a publication permanently. Most students are never taught the mechanics of how to avoid them.
+S4 · Our 5-Step Methodology — Process Section
+Component type
+ALTERNATING LEFT-RIGHT TIMELINE — each step card alternates sides. Image/icon on the opposing side. Premium editorial layout.
+Step 1
+Requirement Analysis — We analyse your topic, field, university guidelines, deadline and intended output before writing a word. We map exact academic standards.
+Step 2
+Expert Assignment — Matched to a PhD scholar with both credentials AND active research in your specific subject domain. No cross-domain assignments.
+Step 3
+Structured Writing — Scholar conducts research, structures to academic conventions, writes in correct register. All arguments evidence-based and properly cited.
+Step 4
+Quality Review & Plagiarism Check — 3-stage review: academic standard check, citation verification, Turnitin analysis. Documents above 10% similarity revised before delivery.
+Step 5
+Delivery & Free Revisions — Completed document + Turnitin report + originality certificate delivered on time. Free revisions until 100% satisfied.
+S5 · Subject Fields — Visual Grid
+Component type
+ICON CHIP GRID — each subject domain as a pill with icon. Hover shows available service types for that field. 3 rows on desktop.
+Fields
+Engineering (Mech, Civil, Electrical, Chemical, CS) · Medical & Health Sciences · Management & Business · Social Sciences & Psychology · Humanities · Law · Life Sciences & Biotech · Architecture · Education & Pedagogy · Environmental Sciences · Data Science & AI
+Note
+'Don't see your subject? WhatsApp us — we have 50+ subject-specific scholars on request.' — below grid
+S6 · Scholar Standard — Trust Section
+Component type
+3-COLUMN FEATURE CARDS with large icon, bold claim, explanation paragraph. Off-white background.
+Card 1
+Verified PhD Holders — Every team member's academic credentials are verified before onboarding. No exceptions.
+Card 2
+Active Researchers — Our scholars are not retired academics. They are publishing, reviewing and researching today.
+Card 3
+Domain Specialists — A computer science paper never goes to a management scholar. Subject matching is non-negotiable.
+S7 · Delivery Timeline Guide
+Component type
+VISUAL TIMELINE TABLE — horizontally laid out delivery timeline by service. Service name + time bar (proportional width, CSS) + exact range.
+Assignment
+24–48 hours
+Research Paper
+3–7 days
+Synopsis
+3–5 days
+Thesis (Masters)
+7–15 days
+Dissertation (PhD)
+10–20 days
+Scopus Publication
+15–45 days
+Urgent note
+Urgent delivery available for most services. Contact us with your deadline — we confirm feasibility within 1 hour.
+S8 · CTA — High Urgency
+Heading
+You Have Read This Far. You Know What You Need. Now Let Us Help You.
+Sub-text
+Every week you wait is a week closer to your deadline. Our scholars are available today.
+Buttons
+'Place Your Order Now →' (primary, bold) + 'Get a Free Quote First'
+── PAGE 6: PLACE YOUR ORDER ──
+Pure conversion page. Maximum trust signals, minimum friction.
+S1 · Page Header
+Heading
+Tell Us What You Need — We'll Handle the Rest
+Sub-text
+Average first response: within 1 hour. All information is 100% confidential.
+Trust strip
+🔒 Confidential  |  📄 Plagiarism-Free  |  🔄 Free Revisions  |  ⚡ Urgent Welcome  |  💬 Live WhatsApp Support
+S2 · Order Form — Left 60%
+Full Name
+Required text field
+Email
+Required. Helper: 'We send your document to this email'
+WhatsApp Number
+Required. '+91 format'. Helper: 'We confirm via WhatsApp'
+Service Type
+Dropdown: Thesis / Dissertation / Research Paper / Assignment / Synopsis / Scopus Publication / Other
+Subject / Field
+Text: 'e.g. Mechanical Engineering, MBA Finance, Clinical Psychology'
+Topic / Title
+Textarea 2 rows: 'Your working title or topic description'
+Word Count
+Number field + dropdown (words / pages)
+Deadline
+Date picker. Warning shown if under 48 hours.
+University Name
+Text: 'Helps us match formatting guidelines'
+Referencing Style
+Dropdown: APA 7 / MLA 9 / Harvard / IEEE / Chicago / Vancouver / Other
+Special Instructions
+Large textarea: 'Supervisor notes, chapter breakdown, specific requirements'
+File Upload
+Drag and drop zone. Accept PDF, DOC, DOCX, TXT. Max 10MB. Shows file name after selection.
+Submit Button
+'Place My Order →' — full width, bold, dark green. Below: 'WhatsApp confirmation and email within 1 hour'
+S3 · Sidebar Trust Panel — Right 40%
+Component type
+STICKY SIDEBAR — stays visible as form scrolls. Premium design with green accent borders.
+Trust points
+✓ PhD Expert Assigned  ✓ On-Time Guaranteed  ✓ Free Revisions  ✓ 100% Confidential
+Response badge
+Large badge: 'Average Response: Under 1 Hour'
+WhatsApp button
+Large green button: '💬 Chat Before You Order'
+Guarantee badges
+4 shield badges: 100% Original · On-Time Delivery · Free Revisions · Complete Privacy
+Mini stats
+500+ Orders Completed · 4.9/5 Rating · 0% Plagiarism Rate
+── PAGE 7: TRACK MY ORDER ──
+S1 · Order Tracker
+Component type
+STEP PROGRESS TRACKER — horizontal, with icon per step. Active step glows green. Completed steps have checkmark.
+Input
+Order ID text field + 'Track Now' button
+Steps
+Order Placed → Payment Confirmed → Expert Assigned → Work In Progress → Under Quality Review → Delivered ✓
+Each step
+Icon + label + estimated time below
+S2 · Help
+Content
+Can't find your order? WhatsApp us your Order ID for instant assistance.
+Button
+'WhatsApp Your Order ID →'
+── PAGE 8: CONTACT US ──
+S1 · Hero
+Heading
+Have a Question? We Are Here — And We Reply Fast.
+Sub-text
+Whether you need a quote, have a question, or want to talk to a scholar before ordering — reach us via WhatsApp instantly.
+Badge
+'Average reply: Under 30 minutes during working hours'
+S2 · 3 Contact Cards
+Card 1
+📲 WhatsApp (Primary) — Click to open pre-filled chat. Mon–Sat 9am–9pm IST. Fastest. Recommended.
+Card 2
+📧 Email — orders@researchscholars.online — Detailed requirements + file attachments. Response within 3 hours.
+Card 3
+⏰ Working Hours — Monday to Saturday: 9:00 AM – 9:00 PM IST. Urgent requests accepted outside hours via WhatsApp.
+Component type
+3 cards with icon top-left, title bold, description, action button. Cards have hover lift effect.
+S3 · Contact Form
+Fields
+Name · Email · Subject dropdown · Message · Send Message button
+Component type
+Clean form. Subject dropdown: General Query / Order Inquiry / Pricing / Urgent Request / Other
+S4 · FAQ Accordion (8 Questions)
+Q1
+How do I place an order? → Fill the order form on our Place Your Order page, or WhatsApp us directly. We respond within 1 hour.
+Q2
+Is the work 100% original? → Yes. Written from scratch by a PhD scholar. Turnitin-verified. Certificate provided.
+Q3
+Will anyone know I used your service? → Never. Strict confidentiality — identity, university, topic never disclosed.
+Q4
+What is your revision policy? → Free unlimited revisions within agreed scope. Your satisfaction is guaranteed.
+Q5
+Can you handle urgent orders? → Yes. Assignments: 24 hours. Research papers: 48–72 hours. Contact first to confirm availability.
+Q6
+Which subjects do you cover? → 10+ domains: Engineering, Medicine, Management, Social Sciences, Law, Life Sciences, Computer Science, Architecture, Education, Humanities.
+Q7
+How do I pay? → Bank transfer, UPI, or online payment. 50% advance + 50% on delivery. Details shared on order confirmation.
+Q8
+How long does delivery take? → Assignments: 24–48 hrs. Research Papers: 3–7 days. Thesis: 7–15 days. Dissertations: 10–20 days. Scopus Publication: 15–45 days.
+4. Premium UI Components — Build Guide
+This section maps every section to its component type, source inspiration, and build notes. The AI agent should reference this before building any page.
+4.1 Component Inventory with Sources
+ID
+Component
+Description + Build Notes
+Source / Reference
+C-01
+Marquee Ticker
+Infinite CSS marquee. Two copies of content side by side for seamless loop. pause on hover.
+21st.dev — search 'infinite scroll marquee' or Tailwind UI
+C-02
+Mega Dropdown Nav
+Services dropdown shows 6 items in 2-col grid with icons. CSS position:absolute. Close on outside click.
+21st.dev — search 'mega menu' or Headless UI
+C-03
+Hero Split + Clip
+55/45 split. Right image inside CSS clip-path diagonal shape. Green shape overlay via pseudo-element.
+21st.dev — search 'hero split' + custom clip-path
+C-04
+Bento Stats Grid
+Asymmetric grid of stat boxes. CSS Grid with grid-template-areas. Dark green bg. Animated count-up.
+21st.dev — search 'bento grid stats' — Aceternity UI style
+C-05
+Tabbed Service Cards
+Vertical/horizontal tab nav. Tab content fades on switch. Image-led cards inside tab panels.
+21st.dev — search 'animated tabs'
+C-06
+SVG Draw Timeline
+Horizontal timeline with SVG connector line that draws using stroke-dashoffset animation on scroll.
+21st.dev — search 'timeline component' or GSAP DrawSVG pattern
+C-07
+Scroll-Sticky Feature
+Left image stays sticky (position:sticky, top:100px) while right feature list scrolls. Desktop only.
+21st.dev — search 'sticky scroll feature' — Aceternity UI
+C-08
+Dual-Direction Marquee
+Two rows, one left-scroll one right-scroll. Logo opacity 45% → 100% on hover. Pure CSS.
+21st.dev — search 'marquee logos' — shadcn/ui
+C-09
+Masonry Testimonials
+CSS columns: 3 on desktop for naturally varied card heights. Cards: photo, stars, quote, tag.
+21st.dev — search 'masonry testimonials'
+C-10
+Gradient CTA Banner
+Full-width dark gradient with video background (very low opacity). Glassmorphism button.
+21st.dev — search 'CTA banner dark'
+C-11
+Card Flip Team
+CSS 3D perspective + rotateY on hover for front/back flip. Front: photo + name. Back: bio.
+21st.dev — search '3d flip card'
+C-12
+CSS Bar Chart
+Rejection reasons shown as animated CSS bars. Width transitions from 0 to target on IntersectionObserver.
+Build custom — CSS width:0→value transition, no chart library needed
+C-13
+Alternating Timeline
+Left/right alternating step cards with center connector line. Vertical. Scroll-triggered reveal.
+21st.dev — search 'vertical timeline alternating'
+C-14
+Expandable Accordion
+Max-height:0→auto with overflow:hidden transition. Icon rotates 45° on open. One open at a time.
+21st.dev — search 'accordion' — Radix UI primitive
+C-15
+Step Progress Tracker
+Horizontal step bar. Active step: filled green circle + glow. Completed: checkmark. Responsive.
+21st.dev — search 'step progress' or Tailwind UI stepper
+C-16
+Sticky Order Sidebar
+position:sticky, top:24px. Visible while form scrolls. Contains trust signals + WhatsApp CTA.
+Build custom — standard sticky positioning
+C-17
+Floating WhatsApp
+Fixed position bottom-right. Animated CSS pulse ring. Branded green. Pre-filled wa.me link.
+21st.dev — search 'floating action button'
+C-18
+Scroll Reveal
+IntersectionObserver adds 'visible' class. CSS: opacity:0, translateY:24px → opacity:1, translateY:0. 400ms ease-out.
+Build custom — 20 lines of JS + CSS
+4.2 21st.dev Integration Instructions
+The AI agent can pull component source code directly from 21st.dev. Steps:
+Go to 21st.dev/home and search the component name from the table above
+Copy the React/Tailwind component code
+Adapt styling: replace their color variables with ResearchScholars CSS variables (--color-primary, etc.)
+Replace all placeholder text/images with the content specified in Section 3
+Test component at 375px, 768px, 1280px breakpoints
+Priority components to get from 21st.dev first: C-04 (Bento Stats), C-07 (Sticky Scroll), C-09 (Masonry Testimonials), C-13 (Alternating Timeline). These are the most visually impactful.
+5. Gemini Media Brief — All Images & Videos to Generate
+Generate ALL media assets using Google Gemini (Imagen 3 for images, VideoFX for videos) BEFORE building the website. Every asset has a precise prompt below. Asset IDs match the references in Section 3.
+IMPORTANT: All human subjects must appear to be South Asian (Indian academic context). Academic settings only — libraries, desks, labs, lecture halls. No Western stock-photo aesthetics.
+5.1 How to Use Gemini for Generation
+Open gemini.google.com or use Gemini API (model: imagen-3.0-generate-002 for images)
+For each asset: copy the EXACT prompt from column 3 of the table below
+Add ALWAYS-ON suffix to every image prompt: ', photorealistic, Indian academic setting, professional photography, high detail, 4K quality, no watermark'
+For illustrations: add ', flat design illustration, clean vector style, academic theme, forest green #1B5E20 color accent'
+Save all assets as WebP format. Target sizes in column 5.
+Name files exactly as the Asset ID (e.g. IMG-01.webp, VID-01.mp4)
+5.2 Complete Media Asset Table
+ID
+Type
+Gemini Prompt (copy exactly)
+Used On / Placement
+Size / Ratio
+IMG-01
+PHOTO
+Indian female postgraduate student sitting at a large wooden desk in a university library, surrounded by open academic textbooks and research papers, writing notes with focused concentration, warm ambient library lighting, bookshelves visible in background, green study lamp, natural daylight from window
+Home page — Hero section right image
+1400×900px 16:9
+IMG-02
+PHOTO PAIR
+(Generate 2 images) A: Indian PhD scholar in glasses reviewing a printed manuscript at a desk, pen in hand, serious academic expression, warm office lighting. B: Young Indian male student in university hoodie working on laptop in a modern campus study space, coffee cup nearby
+Home — About section collage (2 images stacked)
+800×600px each
+IMG-03
+PHOTO
+Overhead flat-lay of an Indian student's desk showing a laptop screen with an academic rejection email notification, scattered printed papers, highlighters, a thesis draft, hands on keyboard in a stressed posture, dramatic shadow lighting
+Home S7 + Research Support — Problem section ghost BG
+1600×900px 16:9
+IMG-04
+PHOTO
+Stack of printed academic thesis documents bound with spiral binding, scholarly books open beside them, a pen making notes, soft focus background of university library, green accent light, academic gravitas aesthetic
+Services — Thesis Writing card image
+800×500px
+IMG-05
+PHOTO
+Indian male doctoral student presenting his dissertation research at a university seminar table, pointing at printed data charts, academic committee members visible in background, formal research setting
+Services — Dissertations card image
+800×500px
+IMG-06
+PHOTO
+Close-up of a printed academic research paper with citation formatting visible, red editorial pen marks, a scientific data figure showing graph results, placed on a clean academic desk with reference books
+Services — Research Papers card image
+800×500px
+IMG-07
+PHOTO
+Indian female student studying at a cafe table, laptop open showing a document, notebook with handwritten assignment notes beside it, pen in hand, focused expression, casual academic setting
+Services — Assignments card image
+800×500px
+IMG-08
+PHOTO
+A clean research synopsis document on a white desk with a structured outline visible, sections marked with blue pen, alongside a university guidelines booklet, academic planning aesthetic
+Services — Synopsis Writing card image
+800×500px
+IMG-09
+PHOTO
+Abstract professional image of an open academic journal with institutional header and peer-reviewed article layout, Elsevier-style editorial design, scientific figures and abstract text visible, prestige publishing aesthetic
+Services — Scopus Publication card image
+800×500px
+IMG-10
+PHOTO
+Indian male PhD scholar in formal shirt seated at a large academic desk with multiple reference books, published journals, and a laptop showing research data, bookshelves behind him, scholarly authority aesthetic, warm directional lighting
+Home S10 — Why Choose Us sticky image
+900×1100px portrait
+IMG-11A
+PHOTO
+Professional headshot of young Indian female postgraduate student, 22–26 years, wearing academic formal attire, warm confident expression, university campus background blurred, professional portrait lighting
+Home S12 — Testimonial Card 1
+400×400px square
+IMG-11B
+PHOTO
+Professional headshot of Indian male academic professor, 38–46 years, wearing a formal shirt, scholarly glasses, warm confident expression, university office background, professional portrait lighting
+Home S12 — Testimonial Card 2
+400×400px square
+IMG-11C
+PHOTO
+Professional headshot of Indian female MBA student, 24–28 years, business formal attire, confident warm smile, modern campus or professional setting background, clean portrait
+Home S12 — Testimonial Card 3
+400×400px square
+IMG-12
+PHOTO
+Wide-angle interior of a large university research library at dusk, high bookshelves, warm amber lighting, empty reading tables with green desk lamps, deep scholarly atmosphere, academic grandeur
+About page — Hero banner background
+1800×700px wide
+IMG-13
+PHOTO TRIO
+(Generate 3 images) A: Indian female PhD scholar confidently presenting research findings at a seminar podium, slides visible behind. B: Indian male academic reviewing a printed manuscript with red editing pen. C: Indian researcher at desktop computer with multiple browser windows showing academic databases
+About — Our Story collage (3 images)
+700×500px each
+IMG-14A
+PHOTO
+Professional academic headshot of Indian male mechanical engineer, 40–50 years, wearing formal shirt and blazer, confident scholarly expression, university faculty setting, clean professional portrait
+About — Team Card 1
+500×500px
+IMG-14B
+PHOTO
+Professional academic headshot of Indian male business school professor, 42–52 years, wearing formal suit, authoritative yet warm expression, office bookshelf background, professional lighting
+About — Team Card 2
+500×500px
+IMG-14C
+PHOTO
+Professional academic headshot of Indian female scientist or researcher, 38–48 years, wearing lab coat or formal attire, confident professional expression, research lab background, professional portrait
+About — Team Card 3
+500×500px
+IMG-14D
+PHOTO
+Professional academic headshot of young Indian male computer scientist or tech academic, 32–40 years, modern formal attire, tech-forward setting or university background, professional portrait
+About — Team Card 4
+500×500px
+IMG-15
+PHOTO
+Wide elevated view of Indian university campus building exterior at golden hour, modern academic architecture, students visible walking, warm professional atmosphere, prestigious academic institution aesthetic
+Services page — Hero banner
+1800×700px wide
+IMG-16A
+PHOTO
+Professional academic headshot of Indian male engineering professor, 40–50 years, formal attire, scholarly expression, university background
+Scopus Testimonial Card 1
+400×400px
+IMG-16B
+PHOTO
+Professional academic headshot of Indian female pharmacy or science faculty, 38–48 years, formal academic attire, warm confident expression, research background
+Scopus Testimonial Card 2
+400×400px
+ILL-01
+ILLUSTRATION
+Flat vector illustration of an academic publication journey: research papers with charts flowing into a journal cover, global citation network lines connecting, Scopus database symbol, peer review icons, academic achievement. Forest green #1B5E20 dominant color, gold accents, white background, clean minimal style
+Scopus page — Hero right visual
+900×700px
+ILL-02
+ILLUSTRATION
+Data visualization illustration: large circle divided into 98% grey and 2% vibrant forest green sectors, representing publication gap. Below: funnel graphic showing many submissions narrowing to few acceptances. Clean typographic numbers. Dark academic background, white and green text
+Research Support — Hero data visual
+900×600px
+ILL-03
+ILLUSTRATION
+Flat isometric illustration of a PhD scholar's workspace: open books, academic papers, laptop showing graphs, citation cards, coffee cup, pen, university seal visible. Forest green and white color palette, warm academic atmosphere, clean editorial style
+General use — fallback across pages
+800×600px
+VID-01
+VIDEO 8-10 SEC
+Slow cinematic overhead drone shot of a university library reading room at dusk, long rows of academic books, warm amber desk lamp pools of light, empty but prestigious atmosphere, loop-friendly (start and end frame match), no people, calm and scholarly, 24fps cinematic grade
+Home S13 — CTA banner background video (very low opacity overlay)
+1920×1080px MP4
+VID-02
+VIDEO 5-7 SEC
+Close-up slow-motion of a hand writing academic notes on paper with a fountain pen, academic textbook open beside notebook, soft focus bookshelves in background, warm lighting, scholarly aesthetic, loop-friendly 24fps
+Research Support page — optional ambient section background
+1920×1080px MP4
+5.3 Image Post-Processing Instructions
+Convert all generated images to WebP format (reduces file size 30–40% vs JPG)
+Hero images: compress to max 250KB. Card images: max 120KB. Thumbnails: max 60KB.
+All images: add green colour grade overlay in image editor (Multiply blend mode, 5–8% opacity, #1B5E20) to unify the green brand feel
+Videos: compress to H.264 MP4, max 3MB. Will be autoplay muted loop.
+For hero section overlay: apply CSS mix-blend-mode or a ::after pseudo-element with green gradient overlay — DO NOT bake this into the image itself (keeps it reusable)
+6. Technical Stack & Build Instructions
+6.1 Stack
+Framework
+Next.js 14 (App Router) — SSR for SEO, fast page loads, clean routing
+Styling
+Tailwind CSS 3.4 — utility-first, pairs perfectly with component library
+Components
+shadcn/ui as base + custom components from 21st.dev (see Section 4)
+Icons
+Phosphor Icons (phosphor-icons/react) — consistent, beautiful, 1000+ icons
+Fonts
+Google Fonts: DM Serif Display (400), Nunito Sans (600,700), Inter (400,500), JetBrains Mono (600). Load via next/font.
+Animation
+Framer Motion 10 for page transitions + Aceternity UI patterns for scroll effects
+Forms
+React Hook Form + Zod validation
+Analytics
+Google Analytics 4 + Google Search Console — configure Day 1
+Deployment
+Vercel — automatic deploys from GitHub main branch
+Image handling
+next/image with WebP, lazy loading, blur placeholder
+6.2 CSS Variables — globals.css
+Paste into :root in globals.css
+--color-primary: #1B5E20;
+--color-accent: #2D8C4E;
+--color-light: #E8F5E9;
+--color-deep: #0D2F17;
+--color-text: #212121;
+--color-text-mid: #424242;
+--color-gold: #F9A825;
+--color-alert: #E65100;
+--font-display: 'DM Serif Display', serif;
+--font-heading: 'Nunito Sans', sans-serif;
+--font-body: 'Inter', sans-serif;
+--font-mono: 'JetBrains Mono', monospace;
+--radius-card: 14px;
+--radius-btn: 6px;
+--shadow-card: 0 4px 20px rgba(0,0,0,0.07);
+--shadow-hover: 0 12px 40px rgba(27,94,32,0.14);
+--transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+6.3 Folder Structure
+/app — All Next.js 14 App Router pages
+/app/page.jsx — Home
+/app/about/page.jsx
+/app/services/page.jsx
+/app/scopus-publication/page.jsx
+/app/research-support/page.jsx
+/app/order/page.jsx
+/app/track-order/page.jsx
+/app/contact/page.jsx
+/components/layout — Navbar, Footer, AnnouncementBar
+/components/ui — All reusable components (ServiceCard, StatsStrip, ProcessTimeline, TestimonialCard, CTABanner, FloatingWhatsApp, AccordionFAQ)
+/components/sections — Page-specific section components
+/public/images — All WebP assets named by ID (IMG-01.webp etc.)
+/public/videos — VID-01.mp4, VID-02.mp4
+/lib — utilities, constants (stats, services data)
+/styles — globals.css
+6.4 Data Files
+Extract all repeated data (stats, services, FAQs, team members) into /lib/data.js so content is easy to update without touching component code.
+/lib/data/stats.js — Array of {number, unit, label} for all stat strips
+/lib/data/services.js — Array of {id, title, category, image, stat, description, cta}
+/lib/data/faq.js — Array of {question, answer} per page
+/lib/data/team.js — Array of {name, title, qualification, image, publications}
+/lib/data/testimonials.js — Array of {image, name, role, university, stars, quote, service}
+7. Pre-Launch Checklist
+7.1 Pages Complete
+Home — all 14 sections with correct components and media assets wired in
+About Us — all 8 sections with team cards (flip effect) and story
+Services Overview — tabbed cards, pricing table, standards row
+Scopus Publication — educational content, CSS bar chart, alternating timeline
+Research Support — typographic stats, expandable barriers, process timeline
+Place Your Order — full form + sticky sidebar
+Track My Order — step progress tracker
+Contact Us — 3 contact cards, form, accordion FAQ
+7.2 Global
+Floating WhatsApp button (C-17) on every page, bottom-right, always visible
+Announcement ticker bar on every page top
+Navbar sticky + active page indicator + mega dropdown working
+Footer 4-column complete with correct links
+All scroll reveal animations (C-18) working on all sections
+Stats count-up triggers on viewport entry on all pages
+Mobile responsive tested at 375px, 768px, 1024px, 1280px
+Lighthouse score 90+ on Performance, Accessibility, Best Practices, SEO
+All images in WebP with alt text
+Google Analytics 4 firing on page load and CTA click events
+7.3 Content & Media
+All 26 media assets (IMG, ILL, VID) placed in correct sections
+No Lorem Ipsum placeholder text anywhere
+All statistics consistent across all pages (500+, 94%, 30+, etc.)
+Testimonial sections present on Home (S12) and Scopus page (S6)
+No standalone testimonials page — confirmed removed
+No blog page — confirmed removed
+Individual service sub-pages — confirmed NOT built in Phase 1. Services page cards link to /order
+WhatsApp number opens pre-filled message correctly
+Order form submits and sends confirmation email
+Phase 2 upgrade path: note in codebase README explaining service sub-pages are Phase 2
+End of Document — ResearchScholars.online — Phase 1 Build — Version 3.0
