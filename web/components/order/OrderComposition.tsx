@@ -13,46 +13,43 @@ export type OrderServiceType = {
 };
 
 export function OrderComposition({ defaultPlanId }: { defaultPlanId?: string }) {
-  // If a valid ID is passed, start directly in payment mapping to that plan.
   const defaultPlan = pricingData.find((p) => p.id === defaultPlanId);
 
   const [step, setStep] = useState<"selection" | "payment" | "success">(
     defaultPlan ? "payment" : "selection"
   );
-  
   const [selectedService, setSelectedService] = useState<OrderServiceType | null>(
     defaultPlan ? { id: defaultPlan.id, title: defaultPlan.title, price: defaultPlan.price } : null
   );
+  // Real order number returned from DB after payment
+  const [confirmedOrderNo, setConfirmedOrderNo] = useState<string>("");
 
   const handleSelectService = (service: OrderServiceType) => {
     setSelectedService(service);
     setStep("payment");
   };
 
-  const handlePaymentSuccess = () => {
+  const handlePaymentSuccess = (orderNo: string) => {
+    setConfirmedOrderNo(orderNo);
     setStep("success");
   };
 
-  const goBackToSelection = () => {
-    setStep("selection");
-  };
+  const goBackToSelection = () => setStep("selection");
 
   return (
     <main className="flex min-h-[calc(100vh-80px)] flex-col bg-surface-cream">
-      {step === "selection" && (
-        <OrderSelection onSelect={handleSelectService} />
-      )}
-      
+      {step === "selection" && <OrderSelection onSelect={handleSelectService} />}
+
       {step === "payment" && selectedService && (
-        <PaymentSimulation 
-          service={selectedService} 
-          onSuccess={handlePaymentSuccess} 
-          onBack={goBackToSelection} 
+        <PaymentSimulation
+          service={selectedService}
+          onSuccess={handlePaymentSuccess}
+          onBack={goBackToSelection}
         />
       )}
 
       {step === "success" && selectedService && (
-        <OrderSuccess service={selectedService} />
+        <OrderSuccess service={selectedService} orderNo={confirmedOrderNo} />
       )}
     </main>
   );

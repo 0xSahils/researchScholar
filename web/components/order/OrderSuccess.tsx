@@ -1,22 +1,26 @@
 "use client";
 
 import Link from "next/link";
-import { CheckCircle, Download } from "@phosphor-icons/react";
+import { CheckCircle, Download, ArrowRight } from "@phosphor-icons/react";
 import type { OrderServiceType } from "./OrderComposition";
 import { motion } from "framer-motion";
 
-export function OrderSuccess({ service }: { service: OrderServiceType }) {
-  // Generate a dummy timestamp and order ID
-  const orderId = `RS-${Math.floor(Math.random() * 90000) + 10000}`;
-  const date = new Date().toLocaleDateString('en-IN', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric'
+export function OrderSuccess({
+  service,
+  orderNo,
+}: {
+  service: OrderServiceType;
+  orderNo: string;
+}) {
+  const date = new Date().toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
   });
 
   return (
     <section className="flex flex-1 flex-col items-center justify-center py-20 px-6">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         className="mx-auto w-full max-w-lg overflow-hidden rounded-[2rem] border border-surface-line bg-white shadow-card text-center"
@@ -26,16 +30,20 @@ export function OrderSuccess({ service }: { service: OrderServiceType }) {
             <CheckCircle className="h-10 w-10 text-white" weight="fill" />
           </div>
           <h1 className="font-heading text-3xl font-bold text-white mb-2">Payment Successful</h1>
-          <p className="text-white/80 font-medium">Your request has been received by our scholar allocation desk.</p>
+          <p className="text-white/80 font-medium">
+            Your request has been saved. Check your email and WhatsApp for confirmation.
+          </p>
         </div>
 
         <div className="p-8 md:p-10 text-left">
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-brand-accent mb-6">Receipt Details</h2>
-          
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-brand-accent mb-6">
+            Receipt Details
+          </h2>
+
           <div className="space-y-4">
             <div className="flex justify-between items-center pb-4 border-b border-surface-line/60">
               <span className="text-ink-muted text-sm">Order ID</span>
-              <span className="font-semibold text-ink font-mono">{orderId}</span>
+              <span className="font-semibold text-ink font-mono">{orderNo}</span>
             </div>
             <div className="flex justify-between items-center pb-4 border-b border-surface-line/60">
               <span className="text-ink-muted text-sm">Date</span>
@@ -50,6 +58,15 @@ export function OrderSuccess({ service }: { service: OrderServiceType }) {
               <span className="font-heading text-2xl font-bold text-brand-primary">{service.price}</span>
             </div>
           </div>
+
+          {/* Track order link */}
+          <Link
+            href={`/track-order?order=${encodeURIComponent(orderNo)}`}
+            className="mt-6 flex items-center justify-center gap-2 rounded-btn bg-brand-light/40 border border-brand-primary/20 px-5 py-3 text-sm font-semibold text-brand-primary hover:bg-brand-light transition"
+          >
+            Track Order Status
+            <ArrowRight className="h-4 w-4" weight="bold" />
+          </Link>
         </div>
 
         <div className="bg-surface-subtle p-6 md:p-8 flex flex-col sm:flex-row gap-4 border-t border-surface-line/60">
@@ -59,9 +76,7 @@ export function OrderSuccess({ service }: { service: OrderServiceType }) {
           >
             Return to Home
           </Link>
-          <button
-            className="flex flex-1 items-center justify-center gap-2 rounded-btn bg-brand-primary px-5 py-3 text-sm font-semibold text-white shadow-card transition hover:bg-brand-deep"
-          >
+          <button className="flex flex-1 items-center justify-center gap-2 rounded-btn bg-brand-primary px-5 py-3 text-sm font-semibold text-white shadow-card transition hover:bg-brand-deep">
             <Download className="h-4 w-4" weight="bold" />
             Download Invoice
           </button>

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-
+import { Suspense } from "react";
 import { TrackOrderClient } from "@/components/track/TrackOrderClient";
 
 export const metadata: Metadata = {
@@ -10,5 +10,9 @@ export const metadata: Metadata = {
 };
 
 export default function TrackOrderPage() {
-  return <TrackOrderClient />;
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-surface-cream" />}>
+      <TrackOrderClient />
+    </Suspense>
+  );
 }
