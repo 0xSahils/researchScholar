@@ -1,26 +1,25 @@
 import Link from "next/link";
 import { ArrowRight, CheckCircle } from "@phosphor-icons/react/dist/ssr";
 import { pricingData } from "@/lib/data/site-content";
-import { getPublicPricing } from "@/lib/actions/admin";
-
-function formatPrice(amount: number) {
-  return `₹${amount.toLocaleString("en-IN")}`;
-}
+import { getPublicPricing, getPublicSettings } from "@/lib/actions/admin";
+import { applyGst, fmtINR } from "@/lib/gst";
 
 export async function ServicesPricing() {
-  // Try to get live prices from DB; fall back to static data if DB is unavailable
-  const dbPrices = await getPublicPricing().catch(() => []);
+  const [dbPrices, publicSettings] = await Promise.all([
+    getPublicPricing().catch(() => []),
+    getPublicSettings().catch(() => ({ gst_rate: 0, google_analytics_id: null })),
+  ]);
 
-  // Build a lookup from service_name to base_price
-  const priceMap = new Map(dbPrices.map((r) => [r.service_name.toLowerCase(), r.base_price]));
+  const gstRate = publicSettings.gst_rate ?? 0;
 
-  // Merge with static pricingData (which has features, popular flag, etc.)
+  // Merge DB prices with static plan data and apply GST
   const plans = pricingData.map((plan) => {
     const dbPrice = dbPrices.find(
       (r) => r.service_name.toLowerCase().includes(plan.title.toLowerCase().split(" ")[0].toLowerCase())
     );
-    const livePrice = dbPrice ? formatPrice(dbPrice.base_price) : plan.price;
-    return { ...plan, price: livePrice };
+    const basePrice = dbPrice ? dbPrice.base_price : Number(plan.price.replace(/[^0-9]/g, ""));
+    const { base, gstAmount, total } = applyGst(basePrice, gstRate);
+    return { ...plan, basePrice: base, gstAmount, totalPrice: total };
   });
 
   return (
@@ -31,7 +30,10 @@ export async function ServicesPricing() {
           <h2 id="pricing-heading" className="mt-3 font-heading text-3xl font-bold text-ink md:text-5xl">
             Transparent pricing. Zero hidden surprises.
           </h2>
-          <p className="mt-4 text-sm text-ink-muted">Full payment is collected at checkout. No deposits or partial payments.</p>
+          <p className="mt-4 text-sm text-ink-muted">
+            Full payment is collected at checkout. No deposits or partial payments.
+            {gstRate > 0 && ` All prices include ${gstRate}% GST.`}
+          </p>
         </div>
 
         <div className="w-full overflow-hidden rounded-[2rem] border border-surface-line/80 bg-white shadow-card">
@@ -76,9 +78,14 @@ export async function ServicesPricing() {
                 <div className="w-px hidden md:block" />
 
                 <div className="flex w-full items-center justify-between md:w-auto md:justify-end gap-6 mt-6 md:mt-0 px-0 md:px-6">
-                  <p className="font-heading text-2xl font-bold text-ink">
-                    {plan.price}
-                  </p>
+                  <div>
+                    <p className="font-heading text-2xl font-bold text-ink">{fmtINR(plan.totalPrice)}</p>
+                    {gstRate > 0 && (
+                      <p className="text-[11px] text-ink-muted mt-0.5">
+                        {fmtINR(plan.basePrice)} + {fmtINR(plan.gstAmount)} GST
+                      </p>
+                    )}
+                  </div>
                   <Link
                     href={`/order?plan=${plan.id}`}
                     className="relative z-20 hidden md:inline-flex items-center gap-2 rounded-btn bg-brand-primary px-5 py-2.5 text-sm font-semibold text-white shadow-card transition group-hover:bg-brand-deep group-hover:-translate-y-px group-hover:shadow-cardHover"

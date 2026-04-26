@@ -181,3 +181,23 @@ export async function sendOrderConfirmationAsAdmin(orderId: string): Promise<{ s
   }
 }
 
+/** Returns only public-safe settings: gst_rate and google_analytics_id */
+export async function getPublicSettings(): Promise<{ gst_rate: number; google_analytics_id: string | null }> {
+  try {
+    const db = createAdminClient();
+    const { data, error } = await db
+      .from("site_settings")
+      .select("gst_rate, google_analytics_id")
+      .order("updated_at", { ascending: false })
+      .limit(1)
+      .single();
+    if (error || !data) return { gst_rate: 0, google_analytics_id: null };
+    return {
+      gst_rate: Number(data.gst_rate ?? 0),
+      google_analytics_id: data.google_analytics_id ?? null,
+    };
+  } catch {
+    return { gst_rate: 0, google_analytics_id: null };
+  }
+}
+

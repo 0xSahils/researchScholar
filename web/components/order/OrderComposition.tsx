@@ -9,12 +9,14 @@ export type OrderServiceType = {
   id: string;
   title: string;
   price: string;
+  basePrice: number;
 };
 
 type PricingPlan = {
   id: string;
   title: string;
   price: string;
+  basePrice: number;
   features: readonly string[];
   popular: boolean;
 };
@@ -22,9 +24,11 @@ type PricingPlan = {
 export function OrderComposition({
   defaultPlanId,
   pricingData,
+  gstRate,
 }: {
   defaultPlanId?: string;
   pricingData: readonly PricingPlan[];
+  gstRate: number;
 }) {
   const defaultPlan = pricingData.find((p) => p.id === defaultPlanId);
 
@@ -32,7 +36,7 @@ export function OrderComposition({
     defaultPlan ? "payment" : "selection"
   );
   const [selectedService, setSelectedService] = useState<OrderServiceType | null>(
-    defaultPlan ? { id: defaultPlan.id, title: defaultPlan.title, price: defaultPlan.price } : null
+    defaultPlan ? { id: defaultPlan.id, title: defaultPlan.title, price: defaultPlan.price, basePrice: defaultPlan.basePrice } : null
   );
   const [confirmedOrderNo, setConfirmedOrderNo] = useState<string>("");
 
@@ -51,12 +55,13 @@ export function OrderComposition({
   return (
     <main className="flex min-h-[calc(100vh-80px)] flex-col bg-surface-cream">
       {step === "selection" && (
-        <OrderSelection onSelect={handleSelectService} pricingData={pricingData} />
+        <OrderSelection onSelect={handleSelectService} pricingData={pricingData} gstRate={gstRate} />
       )}
 
       {step === "payment" && selectedService && (
         <PaymentSimulation
           service={selectedService}
+          gstRate={gstRate}
           onSuccess={handlePaymentSuccess}
           onBack={goBackToSelection}
         />

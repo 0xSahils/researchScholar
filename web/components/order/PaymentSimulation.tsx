@@ -5,6 +5,7 @@ import { ArrowLeft, LockKey, Spinner, Phone, ShieldCheck, CheckCircle } from "@p
 import type { OrderServiceType } from "./OrderComposition";
 import { motion, AnimatePresence } from "framer-motion";
 import { createOrder, markOrderPaid } from "@/lib/actions/orders";
+import { applyGst, fmtINR } from "@/lib/gst";
 
 // ─── Razorpay types ───────────────────────────────────
 declare global {
@@ -31,10 +32,12 @@ function loadRazorpayScript(): Promise<boolean> {
 // ─── Component ────────────────────────────────────────
 export function PaymentSimulation({
   service,
+  gstRate,
   onSuccess,
   onBack,
 }: {
   service: OrderServiceType;
+  gstRate: number;
   onSuccess: (orderNo: string) => void;
   onBack: () => void;
 }) {
@@ -48,7 +51,7 @@ export function PaymentSimulation({
   const [emailForOtp, setEmailForOtp] = useState("");
   const [phoneForOtp, setPhoneForOtp] = useState("");
 
-  const numericPrice = Number(service.price.replace(/[^0-9]/g, ""));
+  const { base, gstAmount, total } = applyGst(service.basePrice, gstRate);
 
   const handlePayment = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -75,7 +78,7 @@ export function PaymentSimulation({
         customerEmail: email,
         customerPhone: phone,
         service: service.title,
-        price: numericPrice,
+        price: total,
         topic: topic || undefined,
         requirements: requirements || undefined,
         paymentStatus: "unpaid",
@@ -95,7 +98,7 @@ export function PaymentSimulation({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amount: numericPrice,
+          amount: total,
           currency: "INR",
           receipt: savedOrderNo,
           notes: { order_id: savedOrderId },
@@ -128,10 +131,8 @@ export function PaymentSimulation({
           razorpay_payment_id: string;
           razorpay_signature: string;
         }) => {
-          // Show processing screen immediately after payment
           setProcessing(true);
 
-          // 4. Verify signature server-side
           const verifyRes = await fetch("/api/razorpay/verify", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -146,7 +147,7 @@ export function PaymentSimulation({
           }
 
           await markOrderPaid(savedOrderId, {
-            amount: numericPrice,
+            amount: total,
             razorpayPaymentId: response.razorpay_payment_id,
             razorpayOrderId: response.razorpay_order_id,
             method: "Razorpay",
@@ -181,7 +182,6 @@ export function PaymentSimulation({
               transition={{ delay: 0.1, duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
               className="flex flex-col items-center gap-6 text-center px-6"
             >
-              {/* Animated ring */}
               <div className="relative h-20 w-20">
                 <div className="absolute inset-0 rounded-full border-4 border-brand-light" />
                 <div className="absolute inset-0 rounded-full border-4 border-t-brand-primary border-r-transparent border-b-transparent border-l-transparent animate-spin" />
@@ -229,10 +229,21 @@ export function PaymentSimulation({
             {service.title} Package
           </h3>
 
-          <div className="mt-auto pt-8 border-t border-surface-line">
-            <div className="flex items-end justify-between">
+          {/* GST Breakdown */}
+          <div className="space-y-2 border-t border-surface-line pt-6">
+            <div className="flex justify-between text-sm text-ink-muted">
+              <span>Base price</span>
+              <span>{fmtINR(base)}</span>
+            </div>
+            {gstRate > 0 && (
+              <div className="flex justify-between text-sm text-ink-muted">
+                <span>GST ({gstRate}%)</span>
+                <span>{fmtINR(gstAmount)}</span>
+              </div>
+            )}
+            <div className="flex items-end justify-between border-t border-surface-line pt-2">
               <span className="text-sm font-medium text-ink-muted">Total Due</span>
-              <span className="font-heading text-3xl font-bold text-ink">{service.price}</span>
+              <span className="font-heading text-3xl font-bold text-ink">{fmtINR(total)}</span>
             </div>
           </div>
 
@@ -347,7 +358,7 @@ export function PaymentSimulation({
             </div>
 
             <p className="text-xs text-ink-muted">
-              Email verification: {emailVerified ? "verified" : "pending"} · Phone verification: {phoneVerified ? "verified" : "pending"}
+              Email verification: {emailVerified ? "✓ verified" : "pending"} · Phone verification: {phoneVerified ? "✓ verified" : "pending"}
             </p>
 
             <button
@@ -363,7 +374,7 @@ export function PaymentSimulation({
               ) : (
                 <>
                   <LockKey className="h-5 w-5" weight="bold" />
-                  Pay {service.price} via Razorpay
+                  Pay {fmtINR(total)} via Razorpay
                 </>
               )}
             </button>

@@ -11,20 +11,21 @@ function parsePriceStr(priceStr: string): number {
 }
 
 // Build initial editable rows from static pricingData, overriding with DB values if present
-function buildInitialRows(dbRows: Record<string, number>[]) {
-  const dbMap = new Map(dbRows.map((r) => [r.service_name as string, r]));
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function buildInitialRows(dbRows: any[]) {
+  const dbMap = new Map(dbRows.map((r) => [String(r.service_name), r]));
+  void dbMap;
   return pricingData.map((plan) => {
     // Try to match by service_name (case-insensitive, first word)
     const dbMatch = dbRows.find((r) =>
-      (r.service_name as string).toLowerCase().includes(plan.title.toLowerCase().split(" ")[0])
+      String(r.service_name).toLowerCase().includes(plan.title.toLowerCase().split(" ")[0])
     );
     const staticPrice = parsePriceStr(plan.price);
     return {
       service_name: plan.title,
       base_price: dbMatch ? Number(dbMatch.base_price) : staticPrice,
       min_price: dbMatch ? Number(dbMatch.min_price ?? staticPrice) : staticPrice,
-      db_id: dbMatch ? (dbMatch.id as string) : null,
+      db_id: dbMatch ? String(dbMatch.id) : null,
     };
   });
 }
