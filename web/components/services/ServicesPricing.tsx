@@ -1,10 +1,28 @@
-"use client";
-
 import Link from "next/link";
-import { ArrowRight, CheckCircle } from "@phosphor-icons/react";
+import { ArrowRight, CheckCircle } from "@phosphor-icons/react/dist/ssr";
 import { pricingData } from "@/lib/data/site-content";
+import { getPublicPricing } from "@/lib/actions/admin";
 
-export function ServicesPricing() {
+function formatPrice(amount: number) {
+  return `₹${amount.toLocaleString("en-IN")}`;
+}
+
+export async function ServicesPricing() {
+  // Try to get live prices from DB; fall back to static data if DB is unavailable
+  const dbPrices = await getPublicPricing().catch(() => []);
+
+  // Build a lookup from service_name to base_price
+  const priceMap = new Map(dbPrices.map((r) => [r.service_name.toLowerCase(), r.base_price]));
+
+  // Merge with static pricingData (which has features, popular flag, etc.)
+  const plans = pricingData.map((plan) => {
+    const dbPrice = dbPrices.find(
+      (r) => r.service_name.toLowerCase().includes(plan.title.toLowerCase().split(" ")[0].toLowerCase())
+    );
+    const livePrice = dbPrice ? formatPrice(dbPrice.base_price) : plan.price;
+    return { ...plan, price: livePrice };
+  });
+
   return (
     <section className="bg-surface-cream py-20 lg:py-28" aria-labelledby="pricing-heading">
       <div className="mx-auto max-w-content px-6 lg:px-8">
@@ -13,6 +31,7 @@ export function ServicesPricing() {
           <h2 id="pricing-heading" className="mt-3 font-heading text-3xl font-bold text-ink md:text-5xl">
             Transparent pricing. Zero hidden surprises.
           </h2>
+          <p className="mt-4 text-sm text-ink-muted">Full payment is collected at checkout. No deposits or partial payments.</p>
         </div>
 
         <div className="w-full overflow-hidden rounded-[2rem] border border-surface-line/80 bg-white shadow-card">
@@ -24,14 +43,14 @@ export function ServicesPricing() {
           </div>
 
           <div className="flex flex-col divide-y divide-surface-line/60">
-            {pricingData.map((plan) => (
-              <div 
+            {plans.map((plan) => (
+              <div
                 key={plan.id}
                 className="group relative flex flex-col md:grid md:grid-cols-[1fr_auto_1fr_auto] items-center gap-4 p-6 transition duration-300 hover:bg-brand-light/10"
               >
                 {/* Mobile shadow link overlay */}
                 <Link href={`/order?plan=${plan.id}`} className="absolute inset-0 z-10 md:hidden" aria-label={`Order ${plan.title}`} />
-                
+
                 <div className="w-full md:w-auto">
                   <div className="flex items-center gap-3">
                     <h3 className="font-heading text-xl font-bold text-ink">{plan.title}</h3>

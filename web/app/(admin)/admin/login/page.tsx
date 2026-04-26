@@ -43,9 +43,16 @@ function LoginForm() {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-xs font-semibold text-white/50 mb-1.5 uppercase tracking-wider">Username</label>
-          <input type="text" value={username} onChange={(e) => setUsername(e.target.value)}
-            required autoComplete="username" disabled={isPending} placeholder="admin"
-            className="w-full bg-white/[0.05] border border-white/[0.1] rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/20 outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition" />
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+            autoComplete="username"
+            disabled={isPending}
+            placeholder="admin"
+            className="w-full bg-white/[0.05] border border-white/[0.1] rounded-xl px-4 py-3 text-sm text-white placeholder:text-white/20 outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition"
+          />
         </div>
         <div>
           <label className="block text-xs font-semibold text-white/50 mb-1.5 uppercase tracking-wider">Password</label>

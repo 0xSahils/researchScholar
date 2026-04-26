@@ -4,10 +4,14 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  House,
+  Article,
+  ChartBar,
+  CurrencyDollar,
+  Gear,
   ListBullets,
-  CurrencyInr,
-  Users,
+  Package,
+  Plus,
+  Tag,
   X,
   List,
   GraduationCap,
@@ -16,10 +20,14 @@ import {
 } from "@phosphor-icons/react";
 
 const navItems = [
-  { href: "/admin", label: "Dashboard", icon: House },
-  { href: "/admin/orders", label: "All Orders", icon: ListBullets },
-  { href: "/admin/payments", label: "Payments", icon: CurrencyInr },
-  { href: "/admin/customers", label: "Customers", icon: Users },
+  { href: "/admin", label: "Dashboard", icon: ChartBar },
+  { href: "/admin/orders", label: "Orders", icon: Package },
+  { href: "/admin/orders/new", label: "Add Order", icon: Plus },
+  { href: "/admin/pricing", label: "Pricing & GST", icon: CurrencyDollar },
+  { href: "/admin/blog", label: "Blog Posts", icon: Article },
+  { href: "/admin/blog/categories", label: "Blog Categories", icon: Tag },
+  { href: "/admin/settings", label: "Site Settings", icon: Gear },
+  { href: "/admin/payments", label: "Payments", icon: ListBullets },
 ];
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -35,6 +43,8 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
       router.refresh();
     });
   };
+
+  const pageTitle = navItems.find((item) => pathname === item.href || pathname.startsWith(`${item.href}/`))?.label ?? "Admin";
 
   return (
     <div className="min-h-[100dvh] bg-[#0a0f0b] text-white flex">
@@ -69,7 +79,9 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
           >
             <List className="h-5 w-5" />
           </button>
-          <div className="flex-1" />
+          <div className="flex-1">
+            <p className="text-xs font-semibold uppercase tracking-[0.15em] text-white/35">{pageTitle}</p>
+          </div>
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
               <div className="h-8 w-8 rounded-full bg-emerald-700/30 ring-1 ring-emerald-500/30 flex items-center justify-center text-xs font-bold text-emerald-400">

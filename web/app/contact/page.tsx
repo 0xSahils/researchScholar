@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ArrowRight, ChatCircleDots, EnvelopeSimple, PhoneCall, Question } from "@phosphor-icons/react/dist/ssr";
 
+import { FaqAccordion } from "@/components/common/FaqAccordion";
 import { siteConfig, whatsappHref } from "@/lib/site-config";
 
 export const metadata: Metadata = {
@@ -43,23 +45,21 @@ export default function ContactPage() {
 
         <div className="mt-10 grid gap-4 md:grid-cols-3">
           <article className="rounded-card border border-surface-line bg-white p-5 shadow-card">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-primary">WhatsApp</p>
+            <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-brand-primary"><ChatCircleDots className="h-4 w-4" />WhatsApp</p>
             <p className="mt-2 text-sm text-ink-muted">Fastest support during working hours</p>
-            <Link href={whatsappHref("Hello, I need a quote for academic support.")} className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-brand-primary">
-              <span aria-hidden>•</span>
-              Message now
+            <Link href={whatsappHref("Hello, I need a quote for academic support.")} className="group mt-4 inline-flex items-center gap-2 text-sm font-semibold text-brand-primary">
+              Message now <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
             </Link>
           </article>
           <article className="rounded-card border border-surface-line bg-white p-5 shadow-card">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-primary">Email</p>
+            <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-brand-primary"><EnvelopeSimple className="h-4 w-4" />Email</p>
             <p className="mt-2 text-sm text-ink-muted">{siteConfig.email}</p>
             <a href={`mailto:${siteConfig.email}`} className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-brand-primary">
-              <span aria-hidden>•</span>
               Send details
             </a>
           </article>
           <article className="rounded-card border border-surface-line bg-white p-5 shadow-card">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-primary">Working hours</p>
+            <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-brand-primary"><PhoneCall className="h-4 w-4" />Working hours</p>
             <p className="mt-2 text-sm text-ink-muted">{siteConfig.hours}</p>
             <p className="mt-4 text-sm font-semibold text-ink">{siteConfig.phoneDisplay}</p>
           </article>
@@ -101,23 +101,18 @@ export default function ContactPage() {
                 <textarea id="contact-message" rows={5} className="w-full rounded-btn border border-surface-line bg-surface-cream px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-primary" placeholder="Share your topic, deadline, and required output." />
               </div>
               <div className="md:col-span-2">
-                <button type="button" className="inline-flex items-center gap-2 rounded-btn bg-brand-primary px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-deep">
+                <button type="button" className="group inline-flex items-center gap-2 rounded-btn bg-brand-primary px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-deep">
                   Send message
-                  <span aria-hidden>→</span>
+                  <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
                 </button>
               </div>
             </form>
           </div>
 
           <div className="rounded-[1.5rem] border border-surface-line bg-white p-6 shadow-card md:p-8">
-            <h2 className="font-heading text-2xl font-bold text-ink">Quick answers</h2>
-            <div className="mt-6 space-y-3">
-              {faqItems.map((item) => (
-                <details key={item.q} className="rounded-card border border-surface-line bg-surface-cream p-4">
-                  <summary className="cursor-pointer list-none text-sm font-semibold text-ink">{item.q}</summary>
-                  <p className="mt-3 text-sm text-ink-muted">{item.a}</p>
-                </details>
-              ))}
+            <h2 className="inline-flex items-center gap-2 font-heading text-2xl font-bold text-ink"><Question className="h-6 w-6 text-brand-primary" />Quick answers</h2>
+            <div className="mt-6">
+              <FaqAccordion items={faqItems.map((item) => ({ question: item.q, answer: item.a }))} />
             </div>
           </div>
         </div>

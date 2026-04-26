@@ -52,6 +52,30 @@ export async function sendOrderConfirmationEmail(
   }
 }
 
+export interface ManualOrderConfirmationData extends OrderNotificationData {
+  advanceAmount: number;
+  balanceAmount: number;
+}
+
+export async function sendManualOrderConfirmation(
+  order: ManualOrderConfirmationData
+): Promise<void> {
+  if (!process.env.RESEND_API_KEY) return;
+  try {
+    const resend = getResend();
+    const from = process.env.RESEND_FROM_EMAIL ?? "noreply@researchscholars.online";
+    await resend.emails.send({
+      from,
+      to: order.customerEmail,
+      subject: `Order Confirmed — ${order.orderNo} | ResearchScholars`,
+      html: manualOrderConfirmationHtml(order),
+    });
+  } catch (err) {
+    console.error("[sendManualOrderConfirmation]", err);
+  }
+}
+
+
 export async function sendAdminNewOrderAlert(
   order: OrderNotificationData
 ): Promise<void> {
@@ -235,6 +259,54 @@ function orderConfirmationHtml(order: OrderNotificationData): string {
     <div class="row"><span class="label">Order No.</span><span class="value" style="font-family:monospace">${order.orderNo}</span></div>
     <div class="row"><span class="label">Service</span><span class="value">${order.service}</span></div>
     <div class="row"><span class="label">Amount Paid</span><span class="value total">₹${order.price.toLocaleString("en-IN")}</span></div>
+    <div style="text-align:center;margin-top:24px">
+      <a href="https://researchscholars.online/track-order" class="track-btn">Track Your Order →</a>
+    </div>
+  </div>
+  <div class="footer">ResearchScholars.online · PhD-led academic support<br>Reply to this email for any queries.</div>
+</div>
+</body></html>`;
+}
+
+function manualOrderConfirmationHtml(order: ManualOrderConfirmationData): string {
+  const hasAdvance = order.advanceAmount > 0;
+  const advanceRow = hasAdvance
+    ? `<div class="row"><span class="label">Advance Received</span><span class="value" style="color:#1B5E20">₹${order.advanceAmount.toLocaleString("en-IN")}</span></div>`
+    : "";
+  const balanceLabel = hasAdvance ? "Balance Due" : "Total Due";
+  const balanceColor = order.balanceAmount > 0 ? "#B45309" : "#1B5E20";
+
+  return `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><style>
+  body { font-family: system-ui, sans-serif; background: #f5f5f5; margin: 0; padding: 20px; }
+  .card { max-width: 560px; margin: auto; background: #ffffff; border-radius: 12px; overflow: hidden; }
+  .header { background: #1B5E20; padding: 32px; text-align: center; }
+  .header h1 { color: white; margin: 0; font-size: 22px; }
+  .body { padding: 32px; }
+  .row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+  .label { color: #666; }
+  .value { font-weight: 600; color: #1a1a1a; }
+  .footer { background: #f9f9f9; padding: 20px 32px; font-size: 12px; color: #888; text-align: center; }
+  .track-btn { display: inline-block; margin-top: 20px; background: #1B5E20; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 600; }
+</style></head>
+<body>
+<div class="card">
+  <div class="header">
+    <p style="color:rgba(255,255,255,0.7);margin:0 0 8px;font-size:12px;letter-spacing:2px;text-transform:uppercase">ResearchScholars</p>
+    <h1>Order Confirmed ✓</h1>
+  </div>
+  <div class="body">
+    <p style="color:#555;font-size:15px">Hi ${order.customerName},</p>
+    <p style="color:#555;font-size:14px;line-height:1.6">Your order has been received and confirmed. Our scholar will be in touch shortly.</p>
+    <div class="row"><span class="label">Order No.</span><span class="value" style="font-family:monospace">${order.orderNo}</span></div>
+    <div class="row"><span class="label">Service</span><span class="value">${order.service}</span></div>
+    <div class="row"><span class="label">Quoted Total</span><span class="value">₹${order.price.toLocaleString("en-IN")}</span></div>
+    ${advanceRow}
+    <div class="row" style="border-bottom:2px solid #1B5E20">
+      <span class="label" style="font-weight:700">${balanceLabel}</span>
+      <span class="value" style="font-size:18px;color:${balanceColor}">₹${order.balanceAmount.toLocaleString("en-IN")}</span>
+    </div>
     <div style="text-align:center;margin-top:24px">
       <a href="https://researchscholars.online/track-order" class="track-btn">Track Your Order →</a>
     </div>

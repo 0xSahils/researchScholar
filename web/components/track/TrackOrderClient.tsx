@@ -1,43 +1,58 @@
 "use client";
 
-import { ArrowRight, CheckCircle, Clock, Spinner, WhatsappLogo } from "@phosphor-icons/react";
+import { ArrowRight, CheckCircle, Clock, Envelope, Spinner, WhatsappLogo } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect, useTransition } from "react";
 import { whatsappHref } from "@/lib/site-config";
 import { getOrderByNumber } from "@/lib/actions/track";
 
-const statusSteps: { key: string; label: string }[] = [
-  { key: "pending", label: "Order placed" },
-  { key: "payment_confirmed", label: "Payment confirmed" },
-  { key: "in_progress", label: "Work in progress" },
-  { key: "revision", label: "Under revision" },
-  { key: "delivered", label: "Delivered" },
-  { key: "completed", label: "Completed" },
+const statusSteps: { key: string; label: string; sub: string }[] = [
+  { key: "placed", label: "Order Placed", sub: "Received in our system" },
+  { key: "payment", label: "Payment Confirmed", sub: "Full payment recorded" },
+  { key: "progress", label: "Work in Progress", sub: "Expert is working on it" },
+  { key: "review", label: "Under Review", sub: "Quality check in progress" },
+  { key: "delivered", label: "Delivered", sub: "File sent to you" },
+  { key: "completed", label: "Completed", sub: "Order closed" },
 ];
 
-function getProgressIndex(status: string): number {
+function getProgressIndex(workStatus: string): number {
   const map: Record<string, number> = {
-    pending: 2,     // payment always confirmed before order is saved
+    pending: 2,
+    assigned: 2,
     in_progress: 3,
-    revision: 4,
+    under_review: 4,
+    revision_requested: 4,
     delivered: 5,
     completed: 6,
     cancelled: 0,
   };
-  return map[status] ?? 2;
+  return map[workStatus] ?? 2;
 }
 
-function getEta(status: string): string {
-  const map: Record<string, string> = {
+function getEtaText(workStatus: string, paymentStatus: string): string {
+  const payLabel = paymentStatus === "paid" ? "Fully Paid" : paymentStatus === "partial" ? "Advance Paid" : "Payment Pending";
+  const statusMap: Record<string, string> = {
     pending: "Awaiting expert assignment",
-    in_progress: "Work in progress — estimated 24–72 hrs",
-    revision: "Revision in progress",
+    assigned: "Expert assigned — starting work soon",
+    in_progress: "Work in progress — est. 24–72 hrs",
+    under_review: "Quality review in progress",
+    revision_requested: "Revision requested",
     delivered: "File delivered — please review",
     completed: "Order complete",
     cancelled: "Order cancelled",
   };
-  return map[status] ?? "Under review";
+  return `${statusMap[workStatus] ?? "In progress"} · ${payLabel}`;
+}
+
+function getPaymentBadge(paymentStatus: string): { label: string; cls: string } {
+  const map: Record<string, { label: string; cls: string }> = {
+    paid: { label: "Fully Paid", cls: "bg-green-50 text-green-700 border-green-200" },
+    partial: { label: "Advance Paid — Balance Due", cls: "bg-amber-50 text-amber-700 border-amber-200" },
+    pending: { label: "Payment Pending", cls: "bg-red-50 text-red-700 border-red-200" },
+    refunded: { label: "Refunded", cls: "bg-slate-50 text-slate-700 border-slate-200" },
+  };
+  return map[paymentStatus] ?? { label: paymentStatus, cls: "bg-surface-cream text-ink-muted border-surface-line" };
 }
 
 export function TrackOrderClient() {
@@ -51,11 +66,8 @@ export function TrackOrderClient() {
   const [notFound, setNotFound] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  // Auto-fetch if prefilled from success page
   useEffect(() => {
-    if (prefilled) {
-      lookup(prefilled);
-    }
+    if (prefilled) lookup(prefilled);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -76,7 +88,21 @@ export function TrackOrderClient() {
     lookup(orderId);
   };
 
-  const progress = result ? getProgressIndex(result.status) : 2;
+  const workStatus = result?.work_status ?? "pending";
+  const progress = result ? getProgressIndex(workStatus) : 0;
+  const payBadge = result ? getPaymentBadge(result.payment_status ?? "pending") : null;
+
+  // Get most recent delivered file
+  const latestFile = (() => {
+    if (!result) return null;
+    const files = Array.isArray(result.delivery_files) ? result.delivery_files : [];
+    if (files.length > 0) return files[files.length - 1];
+    return null;
+  })();
+
+  const deadline = result?.deadline
+    ? new Date(result.deadline).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })
+    : null;
 
   return (
     <main className="bg-gradient-to-b from-surface-cream via-surface-mist/60 to-surface-cream">
@@ -86,7 +112,7 @@ export function TrackOrderClient() {
           Real-time progress view for every active research engagement.
         </h1>
         <p className="mt-4 max-w-2xl text-base text-ink-muted">
-          Enter your order number (e.g. RS-00001) to see current milestone status directly from our system.
+          Enter your order number (e.g. RS-2026-001) to see current milestone status directly from our system.
         </p>
 
         {/* Search form */}
@@ -100,7 +126,7 @@ export function TrackOrderClient() {
             <input
               value={orderId}
               onChange={(e) => setOrderId(e.target.value)}
-              placeholder="Enter Order No. (e.g. RS-00001)"
+              placeholder="Enter Order No. (e.g. RS-2026-001)"
               className="w-full rounded-btn border border-surface-line bg-white px-11 py-3 text-sm outline-none ring-brand-primary transition focus:ring-2 font-mono"
             />
           </div>
@@ -113,61 +139,114 @@ export function TrackOrderClient() {
         {/* Not found */}
         {notFound && submitted && (
           <div className="mt-6 rounded-card border border-red-200 bg-red-50 px-6 py-4 text-sm text-red-700">
-            Order <strong className="font-mono">{orderId}</strong> was not found. Check your order number and try again.
+            Order <strong className="font-mono">{orderId}</strong> was not found. Please check your order number and try again, or{" "}
+            <Link href={whatsappHref("Hi, I cannot find my order number. Can you help?")} className="underline font-semibold">contact us on WhatsApp</Link>.
           </div>
         )}
 
-        {/* Result */}
-        <div className={`mt-12 rounded-[1.5rem] border border-surface-line bg-white p-6 shadow-card md:p-8 transition ${!submitted ? "opacity-50 pointer-events-none" : ""}`}>
-          <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.14em] text-brand-primary">
-                {result ? `Order ${result.order_no}` : "Order progress"}
-              </p>
-              {result && (
-                <p className="text-xs text-ink-muted mt-1">{result.service} · {result.customer_name}</p>
-              )}
-            </div>
-            <span className="rounded-full bg-brand-light px-3 py-1 text-xs font-semibold text-brand-deep">
-              {result ? getEta(result.status) : "Enter your order number"}
-            </span>
-          </div>
-
-          {/* Delivered file link */}
-          {result?.delivered_file && (
-            <a href={result.delivered_file} target="_blank" rel="noopener noreferrer"
-              className="mb-6 flex items-center gap-3 rounded-card border border-brand-accent/30 bg-brand-light/40 px-5 py-3 text-sm font-semibold text-brand-primary hover:bg-brand-light transition">
-              <CheckCircle className="h-5 w-5" weight="fill" />
-              Download your delivered file →
-            </a>
-          )}
-
-          {/* Progress steps */}
-          <ol className="grid gap-4 md:grid-cols-3">
-            {statusSteps.map((step, index) => {
-              const stepNumber = index + 1;
-              const done = stepNumber < progress;
-              const active = stepNumber === progress;
-              return (
-                <li key={step.key}
-                  className={`rounded-card border p-4 transition ${
-                    done ? "border-brand-accent/40 bg-brand-light/40"
-                      : active ? "border-brand-primary bg-brand-primary text-white"
-                      : "border-surface-line bg-surface-cream"
-                  }`}>
-                  <div className="flex items-center gap-3">
-                    <span className={`inline-flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold ${
-                      done ? "bg-brand-primary text-white" : active ? "bg-white/20 text-white" : "bg-white text-ink"
-                    }`}>
-                      {done ? <CheckCircle className="h-4 w-4" weight="fill" /> : stepNumber}
+        {/* Result card */}
+        {submitted && result && (
+          <div className="mt-10 space-y-6">
+            {/* Header */}
+            <div className="rounded-[1.5rem] border border-surface-line bg-white p-6 shadow-card md:p-8">
+              <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
+                <div>
+                  <p className="font-mono text-xs uppercase tracking-widest text-brand-accent">Order · {result.order_no}</p>
+                  <h2 className="mt-1 font-heading text-2xl font-bold text-ink">{result.customer_name}</h2>
+                  <p className="mt-1 text-sm text-ink-muted">{result.service}{result.topic ? ` · ${result.topic}` : ""}</p>
+                </div>
+                <div className="flex flex-col gap-2 items-end">
+                  {deadline && (
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-surface-line px-3 py-1 text-xs text-ink-muted">
+                      <Clock className="h-3 w-3" />
+                      Deadline: {deadline}
                     </span>
-                    <p className={`text-sm font-semibold ${active ? "text-white" : "text-ink"}`}>{step.label}</p>
-                  </div>
-                </li>
-              );
-            })}
-          </ol>
-        </div>
+                  )}
+                  {payBadge && (
+                    <span className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold ${payBadge.cls}`}>
+                      {payBadge.label}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* ETA pill */}
+              <div className="mb-6 rounded-xl border border-brand-primary/20 bg-brand-light/40 px-4 py-3 text-sm font-medium text-brand-deep">
+                {getEtaText(workStatus, result.payment_status ?? "pending")}
+              </div>
+
+              {/* Progress steps */}
+              <ol className="grid gap-3 md:grid-cols-3 lg:grid-cols-6">
+                {statusSteps.map((step, index) => {
+                  const stepNumber = index + 1;
+                  const done = stepNumber < progress;
+                  const active = stepNumber === progress;
+                  return (
+                    <li key={step.key}
+                      className={`rounded-card border p-3 transition ${
+                        done ? "border-brand-accent/40 bg-brand-light/40"
+                          : active ? "border-brand-primary bg-brand-primary text-white"
+                          : "border-surface-line bg-surface-cream opacity-50"
+                      }`}>
+                      <div className="flex items-start gap-2">
+                        <span className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-bold mt-0.5 ${
+                          done ? "bg-brand-primary text-white" : active ? "bg-white/20 text-white" : "bg-white text-ink"
+                        }`}>
+                          {done ? <CheckCircle className="h-3.5 w-3.5" weight="fill" /> : stepNumber}
+                        </span>
+                        <div>
+                          <p className={`text-xs font-semibold leading-tight ${active ? "text-white" : "text-ink"}`}>{step.label}</p>
+                          <p className={`text-[10px] mt-0.5 ${active ? "text-white/70" : "text-ink-muted"}`}>{step.sub}</p>
+                        </div>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ol>
+            </div>
+
+            {/* Delivered file download */}
+            {latestFile && (
+              <div className="rounded-[1.5rem] border border-brand-accent/30 bg-brand-light/40 p-6 shadow-card">
+                <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-brand-accent">Your file is ready</p>
+                <a href={latestFile.url} target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-3 rounded-btn bg-brand-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-deep w-fit">
+                  <CheckCircle className="h-5 w-5" weight="fill" />
+                  Download {latestFile.version ?? "your file"} →
+                </a>
+                {latestFile.sent_at && (
+                  <p className="mt-2 text-xs text-ink-muted">Sent on {new Date(latestFile.sent_at).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}</p>
+                )}
+                <p className="mt-3 text-xs text-ink-muted">Need revisions? Reply to your confirmation email or contact us on WhatsApp.</p>
+              </div>
+            )}
+
+            {/* Payment pending reminder */}
+            {result.payment_status === "pending" && (
+              <div className="rounded-[1.5rem] border border-amber-200 bg-amber-50 p-6">
+                <p className="text-sm font-semibold text-amber-700">Payment Pending</p>
+                <p className="mt-1 text-xs text-amber-600">We have received your order but payment has not yet been confirmed. Please contact us to complete your payment.</p>
+                <Link href={whatsappHref(`Hi, I need to complete payment for order ${result.order_no}`)}
+                  className="mt-3 inline-flex items-center gap-2 rounded-btn bg-[#25D366] px-4 py-2 text-xs font-semibold text-white hover:bg-[#1dbf5a] transition">
+                  <WhatsappLogo className="h-4 w-4" weight="fill" />
+                  Contact us on WhatsApp
+                </Link>
+              </div>
+            )}
+
+            {result.payment_status === "partial" && (
+              <div className="rounded-[1.5rem] border border-amber-200 bg-amber-50 p-6">
+                <p className="text-sm font-semibold text-amber-700">Balance Due</p>
+                <p className="mt-1 text-xs text-amber-600">You have paid an advance. Please clear the balance before delivery to avoid delays.</p>
+                <Link href={whatsappHref(`Hi, I need to clear the balance for order ${result.order_no}`)}
+                  className="mt-3 inline-flex items-center gap-2 rounded-btn bg-[#25D366] px-4 py-2 text-xs font-semibold text-white hover:bg-[#1dbf5a] transition">
+                  <WhatsappLogo className="h-4 w-4" weight="fill" />
+                  Contact us on WhatsApp
+                </Link>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* CTA buttons */}
         <div className="mt-8 flex flex-wrap gap-4">
@@ -175,6 +254,11 @@ export function TrackOrderClient() {
             className="inline-flex items-center gap-2 rounded-btn bg-[#25D366] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1dbf5a]">
             <WhatsappLogo className="h-5 w-5" weight="fill" />
             WhatsApp for help
+          </Link>
+          <Link href="mailto:orders@researchscholars.online"
+            className="inline-flex items-center gap-2 rounded-btn border border-surface-line bg-white px-5 py-2.5 text-sm font-semibold text-ink hover:border-brand-primary hover:text-brand-primary transition">
+            <Envelope className="h-4 w-4" />
+            Email support
           </Link>
           <Link href="/order" className="inline-flex items-center rounded-btn border border-brand-primary/25 px-5 py-2.5 text-sm font-semibold text-brand-primary transition hover:border-brand-primary">
             Place a new order

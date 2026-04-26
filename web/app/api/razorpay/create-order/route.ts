@@ -8,7 +8,7 @@ const razorpay = new Razorpay({
 
 export async function POST(req: NextRequest) {
   try {
-    const { amount, currency = "INR", receipt } = await req.json();
+    const { amount, currency = "INR", receipt, notes } = await req.json();
 
     if (!amount || isNaN(Number(amount))) {
       return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
@@ -18,6 +18,7 @@ export async function POST(req: NextRequest) {
       amount: Math.round(Number(amount) * 100), // paise
       currency,
       receipt: receipt ?? `rcpt_${Date.now()}`,
+      notes: notes && typeof notes === "object" ? notes : undefined,
     });
 
     return NextResponse.json({

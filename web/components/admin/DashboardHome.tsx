@@ -1,158 +1,211 @@
 "use client";
 
 import { motion } from "framer-motion";
-import {
-  ChartBar,
-  Clock,
-  CheckCircle,
-  CurrencyInr,
-  Warning,
-  Users,
-  ArrowRight,
-} from "@phosphor-icons/react";
+import { ArrowRight, Clock, Package, TrendUp, Warning } from "@phosphor-icons/react";
 import Link from "next/link";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  Cell,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
-const statusDotMap: Record<string, string> = {
-  pending: "bg-amber-400",
-  in_progress: "bg-blue-400",
-  revision: "bg-orange-400",
-  delivered: "bg-teal-400",
-  completed: "bg-emerald-400",
-  cancelled: "bg-red-400",
+const WORK_COLORS: Record<string, string> = {
+  pending: "#94a3b8",
+  assigned: "#60a5fa",
+  in_progress: "#fbbf24",
+  under_review: "#c084fc",
+  completed: "#2dd4bf",
+  delivered: "#34d399",
+  revision_requested: "#fb923c",
+  cancelled: "#f87171",
+  revision: "#fb923c",
 };
-const statusLabelMap: Record<string, string> = {
-  pending: "Pending",
-  in_progress: "In Progress",
-  revision: "Revision",
-  delivered: "Delivered",
-  completed: "Completed",
-  cancelled: "Cancelled",
-};
-const statusColorMap: Record<string, string> = {
-  pending: "text-amber-400 bg-amber-400/10",
-  in_progress: "text-blue-400 bg-blue-400/10",
-  revision: "text-orange-400 bg-orange-400/10",
-  delivered: "text-teal-400 bg-teal-400/10",
-  completed: "text-emerald-400 bg-emerald-400/10",
-  cancelled: "text-red-400 bg-red-400/10",
-};
-
-interface DashboardStats {
-  totalOrders: number;
-  pendingOrders: number;
-  completedOrders: number;
-  totalEarnings: number;
-  pendingPaymentsTotal: number;
-  totalCustomers: number;
-}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-interface Props { stats: DashboardStats; recentOrders: any[]; chartData: { month: string; earnings: number }[] }
+interface DashboardStats {
+  ordersThisMonth: number;
+  pendingOrders: number;
+  unpaidOrPartial: number;
+  revenueThisMonth: number;
+  workStatusCounts: Record<string, number>;
+  recentOrders: any[];
+}
 
-export function DashboardHome({ stats, recentOrders, chartData }: Props) {
+interface Props {
+  stats: DashboardStats;
+  revenueLast30Days: { day: string; amount: number }[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  deadlineAlerts: any[];
+}
+
+const payChip = (p: string) => {
+  if (p === "paid") return "text-emerald-300 bg-emerald-500/15";
+  if (p === "partial") return "text-amber-300 bg-amber-500/15";
+  if (p === "refunded") return "text-slate-300 bg-slate-500/15";
+  return "text-red-300 bg-red-500/15";
+};
+
+export function DashboardHome({ stats, revenueLast30Days, deadlineAlerts }: Props) {
+  const donutData = Object.entries(stats.workStatusCounts).map(([name, value]) => ({ name, value }));
   const kpis = [
-    { label: "Total Orders", value: stats.totalOrders, icon: ChartBar, trend: null, color: "text-blue-400", bg: "bg-blue-400/10" },
-    { label: "Active / Pending", value: stats.pendingOrders, icon: Clock, trend: null, color: "text-amber-400", bg: "bg-amber-400/10" },
-    { label: "Completed", value: stats.completedOrders, icon: CheckCircle, trend: null, color: "text-emerald-400", bg: "bg-emerald-400/10" },
-    { label: "Total Earnings", value: `₹${stats.totalEarnings.toLocaleString("en-IN")}`, icon: CurrencyInr, trend: null, color: "text-brand-accent", bg: "bg-brand-accent/10" },
-    { label: "Pending Payments", value: `₹${stats.pendingPaymentsTotal.toLocaleString("en-IN")}`, icon: Warning, trend: null, color: "text-orange-400", bg: "bg-orange-400/10" },
-    { label: "Customers", value: stats.totalCustomers, icon: Users, trend: null, color: "text-violet-400", bg: "bg-violet-400/10" },
+    { label: "Orders this month", value: stats.ordersThisMonth, icon: Package, color: "text-blue-300", bg: "bg-blue-500/10" },
+    { label: "Pending work", value: stats.pendingOrders, icon: Clock, color: "text-amber-300", bg: "bg-amber-500/10" },
+    { label: "Unpaid / partial", value: stats.unpaidOrPartial, icon: Warning, color: "text-red-300", bg: "bg-red-500/10" },
+    { label: "Revenue this month (₹)", value: stats.revenueThisMonth.toLocaleString("en-IN"), icon: TrendUp, color: "text-emerald-300", bg: "bg-emerald-500/10" },
   ];
-
-  const maxEarnings = Math.max(...chartData.map((d) => d.earnings), 1);
 
   return (
     <div className="space-y-8">
       <div>
-        <p className="text-[11px] font-mono uppercase tracking-widest text-white/30 mb-1">Overview</p>
-        <h1 className="text-2xl font-heading font-bold text-white">Dashboard</h1>
+        <p className="mb-1 font-mono text-[11px] uppercase tracking-widest text-white/30">Overview</p>
+        <h1 className="font-heading text-2xl font-bold text-white">Dashboard</h1>
       </div>
 
-      {/* KPI Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {kpis.map((kpi, i) => (
-          <motion.div key={kpi.label} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06, duration: 0.4 }}
-            className="rounded-2xl border border-white/[0.06] bg-white/[0.03] p-5 flex flex-col gap-3">
-            <div className={`h-9 w-9 rounded-xl ${kpi.bg} flex items-center justify-center`}>
+          <motion.div
+            key={kpi.label}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.05, duration: 0.35 }}
+            className="flex flex-col gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.03] p-5"
+          >
+            <div className={`flex h-9 w-9 items-center justify-center rounded-xl ${kpi.bg}`}>
               <kpi.icon className={`h-5 w-5 ${kpi.color}`} weight="bold" />
             </div>
             <div>
-              <p className="text-[11px] text-white/40 font-medium">{kpi.label}</p>
-              <p className="text-2xl font-heading font-bold text-white mt-0.5">{kpi.value}</p>
+              <p className="text-[11px] font-medium text-white/40">{kpi.label}</p>
+              <p className="mt-0.5 font-heading text-2xl font-bold text-white">{kpi.value}</p>
             </div>
           </motion.div>
         ))}
       </div>
 
-      {/* Chart + Recent Orders */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        {/* Bar chart */}
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35, duration: 0.5 }}
-          className="lg:col-span-2 rounded-2xl border border-white/[0.06] bg-white/[0.03] p-6">
-          <p className="text-[11px] font-mono uppercase tracking-widest text-white/30 mb-1">Monthly</p>
-          <h2 className="text-base font-semibold text-white mb-6">Earnings Trend</h2>
-          {chartData.length === 0 ? (
-            <p className="text-sm text-white/20 text-center py-12">No payment data yet</p>
-          ) : (
-            <div className="flex items-end gap-2 h-32">
-              {chartData.map((d, i) => {
-                const heightPct = (d.earnings / maxEarnings) * 100;
-                return (
-                  <div key={d.month} className="flex-1 flex flex-col items-center gap-1">
-                    <div className="relative w-full flex flex-col justify-end" style={{ height: "100px" }}>
-                      <motion.div
-                        initial={{ scaleY: 0 }} animate={{ scaleY: 1 }}
-                        transition={{ delay: 0.4 + i * 0.06, duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
-                        style={{ height: `${heightPct}%`, transformOrigin: "bottom" }}
-                        className="w-full rounded-t-lg bg-gradient-to-t from-brand-primary to-brand-accent"
-                      />
-                    </div>
-                    <span className="text-[9px] font-mono text-white/30">{d.month}</span>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+      {deadlineAlerts.length > 0 ? (
+        <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
+          <p className="font-semibold">Deadline within 48 hours</p>
+          <ul className="mt-2 space-y-1">
+            {deadlineAlerts.map((o: { id: string; order_no: string }) => (
+              <li key={o.id}>
+                <Link href={`/admin/orders/${o.id}`} className="font-mono underline hover:text-white">
+                  {o.order_no}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="rounded-2xl border border-white/[0.06] bg-white/[0.03] p-5"
+        >
+          <p className="mb-1 font-mono text-[11px] uppercase tracking-widest text-white/30">Work status</p>
+          <h2 className="mb-4 text-base font-semibold text-white">Orders by status</h2>
+          <div className="h-64 w-full">
+            {donutData.length === 0 ? (
+              <p className="py-16 text-center text-sm text-white/25">No order data</p>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={donutData} dataKey="value" nameKey="name" innerRadius={56} outerRadius={88} paddingAngle={2}>
+                    {donutData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={WORK_COLORS[entry.name] ?? "#64748b"} />
+                    ))}
+                  </Pie>
+                  <Tooltip contentStyle={{ background: "#111", border: "1px solid #333", borderRadius: 8 }} />
+                </PieChart>
+              </ResponsiveContainer>
+            )}
+          </div>
         </motion.div>
 
-        {/* Recent orders */}
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45, duration: 0.5 }}
-          className="lg:col-span-3 rounded-2xl border border-white/[0.06] bg-white/[0.03] p-6 flex flex-col">
-          <div className="flex items-center justify-between mb-5">
-            <div>
-              <p className="text-[11px] font-mono uppercase tracking-widest text-white/30 mb-1">Latest</p>
-              <h2 className="text-base font-semibold text-white">Recent Orders</h2>
-            </div>
-            <Link href="/admin/orders" className="group flex items-center gap-1 text-xs text-brand-accent hover:text-brand-light transition">
-              View all <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
-            </Link>
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.08 }}
+          className="rounded-2xl border border-white/[0.06] bg-white/[0.03] p-5"
+        >
+          <p className="mb-1 font-mono text-[11px] uppercase tracking-widest text-white/30">Revenue</p>
+          <h2 className="mb-4 text-base font-semibold text-white">Last 30 days</h2>
+          <div className="h-64 w-full">
+            {revenueLast30Days.length === 0 ? (
+              <p className="py-16 text-center text-sm text-white/25">No payments yet</p>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={revenueLast30Days} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="revFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#2D8C4E" stopOpacity={0.5} />
+                      <stop offset="100%" stopColor="#2D8C4E" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff14" />
+                  <XAxis dataKey="day" tick={{ fill: "#ffffff66", fontSize: 10 }} />
+                  <YAxis tick={{ fill: "#ffffff66", fontSize: 10 }} />
+                  <Tooltip contentStyle={{ background: "#111", border: "1px solid #333", borderRadius: 8 }} />
+                  <Area type="monotone" dataKey="amount" stroke="#2D8C4E" fill="url(#revFill)" strokeWidth={2} />
+                </AreaChart>
+              </ResponsiveContainer>
+            )}
           </div>
-          {recentOrders.length === 0 ? (
-            <p className="text-sm text-white/20 text-center py-12">No orders yet</p>
-          ) : (
-            <div className="space-y-px">
-              {recentOrders.map((order) => (
-                <Link key={order.id} href={`/admin/orders/${order.id}`}
-                  className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-white/[0.04] transition group">
-                  <div className={`h-2 w-2 rounded-full flex-shrink-0 ${statusDotMap[order.status] ?? "bg-white/20"}`} />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-white/80 truncate group-hover:text-white transition">{order.customer_name}</p>
-                    <p className="text-xs text-white/30 truncate">{order.service} · {order.order_no}</p>
-                  </div>
-                  <div className="text-right flex-shrink-0">
-                    <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${statusColorMap[order.status] ?? "text-white/40 bg-white/5"}`}>
-                      {statusLabelMap[order.status] ?? order.status}
-                    </span>
-                    <p className="text-xs text-white/30 mt-1 font-mono">
-                      ₹{Number(order.price).toLocaleString("en-IN")}
-                    </p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
         </motion.div>
       </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.12 }}
+        className="flex flex-col rounded-2xl border border-white/[0.06] bg-white/[0.03] p-6"
+      >
+        <div className="mb-5 flex items-center justify-between">
+          <div>
+            <p className="mb-1 font-mono text-[11px] uppercase tracking-widest text-white/30">Latest</p>
+            <h2 className="text-base font-semibold text-white">Recent orders</h2>
+          </div>
+          <Link href="/admin/orders" className="group flex items-center gap-1 text-xs text-brand-accent hover:text-brand-light">
+            View all <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
+          </Link>
+        </div>
+        {stats.recentOrders.length === 0 ? (
+          <p className="py-12 text-center text-sm text-white/20">No orders yet</p>
+        ) : (
+          <div className="space-y-px">
+            {stats.recentOrders.map((order: { id: string; customer_name: string; service: string; order_no: string; work_status?: string; status?: string; payment_status?: string; price: number }) => {
+              const ws = order.work_status ?? order.status ?? "pending";
+              const ps = order.payment_status ?? "pending";
+              return (
+                <Link
+                  key={order.id}
+                  href={`/admin/orders/${order.id}`}
+                  className="flex flex-wrap items-center gap-3 rounded-xl px-3 py-3 transition hover:bg-white/[0.04]"
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-white/80">{order.customer_name}</p>
+                    <p className="truncate text-xs text-white/30">
+                      {order.service} · {order.order_no}
+                    </p>
+                  </div>
+                  <span className="rounded-full bg-white/5 px-2 py-0.5 font-mono text-[10px] text-white/50">{ws}</span>
+                  <span className={`rounded-full px-2 py-0.5 font-mono text-[10px] ${payChip(ps)}`}>{ps}</span>
+                  <div className="text-right">
+                    <p className="font-mono text-xs text-white/40">₹{Number(order.price).toLocaleString("en-IN")}</p>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </motion.div>
     </div>
   );
 }

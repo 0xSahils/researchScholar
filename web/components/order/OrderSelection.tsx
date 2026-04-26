@@ -1,17 +1,30 @@
 "use client";
 
-import { pricingData } from "@/lib/data/site-content";
 import type { OrderServiceType } from "./OrderComposition";
 import { ArrowRight, CheckCircle } from "@phosphor-icons/react";
 import clsx from "clsx";
 
-export function OrderSelection({ onSelect }: { onSelect: (service: OrderServiceType) => void }) {
+type PricingPlan = {
+  id: string;
+  title: string;
+  price: string;
+  features: readonly string[];
+  popular: boolean;
+};
+
+export function OrderSelection({
+  onSelect,
+  pricingData,
+}: {
+  onSelect: (service: OrderServiceType) => void;
+  pricingData: readonly PricingPlan[];
+}) {
   return (
     <section className="mx-auto w-full max-w-5xl px-6 py-12 lg:px-8 lg:py-20">
       <div className="mb-10 lg:mb-16">
         <h1 className="font-heading text-3xl font-bold text-ink md:text-5xl">Select Your Package</h1>
         <p className="mt-4 text-base text-ink-muted md:text-lg">
-          Pick your requested academic support package. Fixed pricing guarantees zero hidden surprises.
+          Pick your requested academic support package. Full payment is required at checkout — no partial payments or deposits.
         </p>
       </div>
 
@@ -30,13 +43,13 @@ export function OrderSelection({ onSelect }: { onSelect: (service: OrderServiceT
                 Most Chosen
               </span>
             )}
-            
+
             <div className="mb-8 w-full">
               <h3 className="font-heading text-xl font-bold text-ink">{plan.title}</h3>
               <p className="mt-4 font-heading text-3xl font-bold text-brand-primary">
                 {plan.price}
               </p>
-              
+
               <ul className="mt-6 space-y-3">
                 {plan.features.map((feat) => (
                   <li key={feat} className="flex items-start gap-2 text-sm text-ink-muted">

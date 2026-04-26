@@ -16,6 +16,9 @@ export const viewport: Viewport = { themeColor: "#0D2F17" };
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en-IN">
+      <head>
+        <meta name="google-site-verification" content={process.env.GOOGLE_SITE_VERIFICATION ?? "your_token_here"} />
+      </head>
       <body className={`${inter.variable} ${nunito.variable} ${dmSerif.variable} ${jetbrains.variable} min-h-[100dvh] bg-surface-cream font-sans text-ink`}>
         <SiteJsonLd />
         <div className="grain-overlay" aria-hidden />

@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { ArrowLeft, LockKey, Spinner, Phone, ShieldCheck, CheckCircle } from "@phosphor-icons/react";
 import type { OrderServiceType } from "./OrderComposition";
 import { motion, AnimatePresence } from "framer-motion";
-import { createOrder } from "@/lib/actions/orders";
+import { createOrder, markOrderPaid } from "@/lib/actions/orders";
 
 // ─── Razorpay types ───────────────────────────────────
 declare global {
@@ -41,6 +41,12 @@ export function PaymentSimulation({
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
+  const [emailVerified, setEmailVerified] = useState(false);
+  const [phoneVerified, setPhoneVerified] = useState(false);
+  const [emailOtp, setEmailOtp] = useState("");
+  const [phoneOtp, setPhoneOtp] = useState("");
+  const [emailForOtp, setEmailForOtp] = useState("");
+  const [phoneForOtp, setPhoneForOtp] = useState("");
 
   const numericPrice = Number(service.price.replace(/[^0-9]/g, ""));
 
@@ -58,21 +64,41 @@ export function PaymentSimulation({
     const fullName  = `${firstName} ${lastName}`.trim();
 
     startTransition(async () => {
-      // 1. Load Razorpay checkout.js
       const loaded = await loadRazorpayScript();
       if (!loaded) {
         setError("Failed to load Razorpay. Check your internet connection.");
         return;
       }
 
-      // 2. Create Razorpay order on server
+      const orderResult = await createOrder({
+        customerName: fullName,
+        customerEmail: email,
+        customerPhone: phone,
+        service: service.title,
+        price: numericPrice,
+        topic: topic || undefined,
+        requirements: requirements || undefined,
+        paymentStatus: "unpaid",
+        workStatus: "pending",
+        verification: { emailVerified, phoneVerified },
+      });
+
+      if (!orderResult.success || !orderResult.orderId || !orderResult.orderNo) {
+        setError(orderResult.error ?? "Could not create your order. Please try again.");
+        return;
+      }
+
+      const savedOrderId = orderResult.orderId;
+      const savedOrderNo = orderResult.orderNo;
+
       const rzpRes = await fetch("/api/razorpay/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           amount: numericPrice,
           currency: "INR",
-          receipt: `rcpt_${Date.now()}`,
+          receipt: savedOrderNo,
+          notes: { order_id: savedOrderId },
         }),
       });
 
@@ -83,7 +109,6 @@ export function PaymentSimulation({
 
       const rzpOrder = await rzpRes.json();
 
-      // 3. Open Razorpay modal
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
         amount: rzpOrder.amount,
@@ -120,24 +145,14 @@ export function PaymentSimulation({
             return;
           }
 
-          // 5. Save order to Supabase
-          const result = await createOrder({
-            customerName: fullName,
-            customerEmail: email,
-            customerPhone: phone,
-            service: service.title,
-            price: numericPrice,
-            topic: topic || undefined,
-            requirements: requirements || undefined,
+          await markOrderPaid(savedOrderId, {
+            amount: numericPrice,
+            razorpayPaymentId: response.razorpay_payment_id,
+            razorpayOrderId: response.razorpay_order_id,
+            method: "Razorpay",
           });
 
-          if (!result.success || !result.orderNo) {
-            setProcessing(false);
-            setError("Payment succeeded but order save failed. Payment ID: " + response.razorpay_payment_id);
-            return;
-          }
-
-          onSuccess(result.orderNo);
+          onSuccess(savedOrderNo);
         },
       };
 
@@ -285,9 +300,59 @@ export function PaymentSimulation({
               </p>
             )}
 
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+              <button
+                type="button"
+                onClick={async () => {
+                  const emailEl = document.querySelector<HTMLInputElement>('input[name="email"]');
+                  if (!emailEl?.value) return;
+                  setEmailForOtp(emailEl.value);
+                  await fetch("/api/verification/send", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "email", value: emailEl.value }) });
+                }}
+                className="rounded-btn border border-surface-line px-4 py-2 text-xs font-semibold text-ink"
+              >
+                Send Email OTP
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  const phoneEl = document.querySelector<HTMLInputElement>('input[name="phone"]');
+                  if (!phoneEl?.value) return;
+                  setPhoneForOtp(phoneEl.value);
+                  await fetch("/api/verification/send", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "phone", value: phoneEl.value }) });
+                }}
+                className="rounded-btn border border-surface-line px-4 py-2 text-xs font-semibold text-ink"
+              >
+                Send Phone OTP
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+              <div className="flex gap-2">
+                <input value={emailOtp} onChange={(event) => setEmailOtp(event.target.value)} placeholder="Email OTP" className="w-full rounded-lg border border-surface-line/80 bg-white px-3 py-2 text-sm" />
+                <button type="button" className="rounded-btn border border-surface-line px-3 py-2 text-xs" onClick={async () => {
+                  const res = await fetch("/api/verification/verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "email", value: emailForOtp, code: emailOtp }) });
+                  const json = await res.json();
+                  setEmailVerified(Boolean(json.success));
+                }}>Verify</button>
+              </div>
+              <div className="flex gap-2">
+                <input value={phoneOtp} onChange={(event) => setPhoneOtp(event.target.value)} placeholder="Phone OTP" className="w-full rounded-lg border border-surface-line/80 bg-white px-3 py-2 text-sm" />
+                <button type="button" className="rounded-btn border border-surface-line px-3 py-2 text-xs" onClick={async () => {
+                  const res = await fetch("/api/verification/verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "phone", value: phoneForOtp, code: phoneOtp }) });
+                  const json = await res.json();
+                  setPhoneVerified(Boolean(json.success));
+                }}>Verify</button>
+              </div>
+            </div>
+
+            <p className="text-xs text-ink-muted">
+              Email verification: {emailVerified ? "verified" : "pending"} · Phone verification: {phoneVerified ? "verified" : "pending"}
+            </p>
+
             <button
               type="submit"
-              disabled={isPending}
+              disabled={isPending || !emailVerified || !phoneVerified}
               className="mt-2 flex w-full items-center justify-center gap-2 rounded-btn bg-brand-primary px-6 py-4 text-base font-semibold text-white shadow-card transition hover:bg-brand-deep disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {isPending ? (
