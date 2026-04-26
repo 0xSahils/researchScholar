@@ -44,8 +44,8 @@ export function PaymentSimulation({
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
-  const [emailVerified, setEmailVerified] = useState(false);
-  const [phoneVerified, setPhoneVerified] = useState(false);
+  const [emailVerified, setEmailVerified] = useState(true); // TEMPORARY: bypassed for now
+  const [phoneVerified, setPhoneVerified] = useState(true); // TEMPORARY: bypassed for now
   const [emailOtp, setEmailOtp] = useState("");
   const [phoneOtp, setPhoneOtp] = useState("");
   const [emailForOtp, setEmailForOtp] = useState("");
@@ -311,6 +311,7 @@ export function PaymentSimulation({
               </p>
             )}
 
+            {/* TEMPORARILY DISABLED OTP VERIFICATION
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
               <button
                 type="button"
@@ -360,6 +361,7 @@ export function PaymentSimulation({
             <p className="text-xs text-ink-muted">
               Email verification: {emailVerified ? "✓ verified" : "pending"} · Phone verification: {phoneVerified ? "✓ verified" : "pending"}
             </p>
+            */}
 
             <button
               type="submit"
