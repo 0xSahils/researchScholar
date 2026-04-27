@@ -8,9 +8,6 @@ import { Globe, CreditCard, ChartLine } from "@phosphor-icons/react";
 export function SiteSettingsManager({ settings }: { settings: any }) {
   const [form, setForm] = useState({
     gst_rate: settings.gst_rate ?? 18,
-    site_title: settings.site_title ?? "",
-    site_meta_description: settings.site_meta_description ?? "",
-    google_analytics_id: settings.google_analytics_id ?? "",
   });
 
   const [isPending, startTransition] = useTransition();
@@ -75,55 +72,6 @@ export function SiteSettingsManager({ settings }: { settings: any }) {
         </div>
       </div>
 
-      {/* SEO & Metadata */}
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
-        <div className="flex items-center gap-3 border-b border-white/[0.06] px-6 py-4">
-          <Globe className="h-4 w-4 text-brand-accent" weight="bold" />
-          <h2 className="text-sm font-semibold text-white/80">SEO &amp; Metadata</h2>
-        </div>
-        <div className="px-6 py-5 space-y-4">
-          {[
-            { key: "site_title", label: "Site Title", placeholder: "ResearchScholars.online", hint: "Used in <title> tag and Open Graph" },
-            { key: "site_meta_description", label: "Meta Description", placeholder: "PhD-led academic support...", hint: "Used in <meta name='description'>" },
-          ].map(({ key, label, placeholder, hint }) => (
-            <div key={key}>
-              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-widest text-white/40">{label}</label>
-              <input
-                type="text"
-                value={String(form[key as keyof typeof form] ?? "")}
-                onChange={(e) => set(key, e.target.value)}
-                placeholder={placeholder}
-                className="w-full rounded-xl border border-white/[0.1] bg-white/[0.03] px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:border-brand-accent/50 focus:outline-none transition"
-              />
-              {hint && <p className="mt-1.5 text-[11px] text-white/25">{hint}</p>}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Google Analytics — Phase 2 */}
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden opacity-60">
-        <div className="flex items-center gap-3 border-b border-white/[0.06] px-6 py-4">
-          <ChartLine className="h-4 w-4 text-brand-accent" weight="bold" />
-          <h2 className="text-sm font-semibold text-white/80">Google Analytics</h2>
-          <span className="ml-auto rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-amber-400">
-            Phase 2
-          </span>
-        </div>
-        <div className="px-6 py-5">
-          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-widest text-white/40">Google Analytics ID</label>
-          <input
-            type="text"
-            value={form.google_analytics_id}
-            onChange={(e) => set("google_analytics_id", e.target.value)}
-            placeholder="G-XXXXXXXXXX"
-            className="w-full rounded-xl border border-white/[0.1] bg-white/[0.03] px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:border-brand-accent/50 focus:outline-none transition"
-          />
-          <p className="mt-1.5 text-[11px] text-white/25">
-            Save your GA ID here — tracking script will be wired in Phase 2.
-          </p>
-        </div>
-      </div>
 
       {/* Save */}
       <div className="flex items-center gap-4">

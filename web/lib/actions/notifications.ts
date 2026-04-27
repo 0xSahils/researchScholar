@@ -38,7 +38,7 @@ export async function sendOrderConfirmationEmail(
 
   try {
     const resend = getResend();
-    const from = process.env.RESEND_FROM_EMAIL ?? "noreply@researchscholars.online";
+    const from = process.env.RESEND_FROM_EMAIL ?? "updates@researchscholar.online";
 
     await resend.emails.send({
       from,
@@ -63,7 +63,7 @@ export async function sendManualOrderConfirmation(
   if (!process.env.RESEND_API_KEY) return;
   try {
     const resend = getResend();
-    const from = process.env.RESEND_FROM_EMAIL ?? "noreply@researchscholars.online";
+    const from = process.env.RESEND_FROM_EMAIL ?? "updates@researchscholar.online";
     await resend.emails.send({
       from,
       to: order.customerEmail,
@@ -83,7 +83,7 @@ export async function sendAdminNewOrderAlert(
 
   try {
     const resend = getResend();
-    const from = process.env.RESEND_FROM_EMAIL ?? "noreply@researchscholars.online";
+    const from = process.env.RESEND_FROM_EMAIL ?? "updates@researchscholar.online";
 
     await resend.emails.send({
       from,
@@ -106,7 +106,7 @@ export async function sendDeliveryEmail(
 
   try {
     const resend = getResend();
-    const from = process.env.RESEND_FROM_EMAIL ?? "noreply@researchscholars.online";
+    const from = process.env.RESEND_FROM_EMAIL ?? "updates@researchscholar.online";
 
     await resend.emails.send({
       from,
@@ -262,8 +262,11 @@ function orderConfirmationHtml(order: OrderNotificationData): string {
     <div style="text-align:center;margin-top:24px">
       <a href="https://researchscholars.online/track-order" class="track-btn">Track Your Order →</a>
     </div>
+    <p style="color:#888;font-size:13px;margin-top:32px;border-top:1px solid #eee;padding-top:16px;">
+      For any queries, please write to our contact on WhatsApp.
+    </p>
   </div>
-  <div class="footer">ResearchScholars.online · PhD-led academic support<br>Reply to this email for any queries.</div>
+  <div class="footer">ResearchScholars.online · PhD-led academic support</div>
 </div>
 </body></html>`;
 }
@@ -310,8 +313,11 @@ function manualOrderConfirmationHtml(order: ManualOrderConfirmationData): string
     <div style="text-align:center;margin-top:24px">
       <a href="https://researchscholars.online/track-order" class="track-btn">Track Your Order →</a>
     </div>
+    <p style="color:#888;font-size:13px;margin-top:32px;border-top:1px solid #eee;padding-top:16px;">
+      For any queries, please write to our contact on WhatsApp.
+    </p>
   </div>
-  <div class="footer">ResearchScholars.online · PhD-led academic support<br>Reply to this email for any queries.</div>
+  <div class="footer">ResearchScholars.online · PhD-led academic support</div>
 </div>
 </body></html>`;
 }
@@ -339,7 +345,9 @@ function adminNewOrderHtml(order: OrderNotificationData): string {
     <div class="row"><span class="label">Phone</span><span class="value">${order.customerPhone ?? "—"}</span></div>
     <div class="row"><span class="label">Service</span><span class="value">${order.service}</span></div>
     <div class="row"><span class="label">Amount</span><span class="value">₹${order.price.toLocaleString("en-IN")}</span></div>
-    <a href="https://researchscholars.online/admin/orders/${order.orderId}" class="btn">View Order in Admin →</a>
+    <div style="text-align:center;margin-top:24px">
+      <a href="https://researchscholars.online/admin/orders/${order.orderId}" class="btn">View Order in Admin →</a>
+    </div>
   </div>
 </div>
 </body></html>`;
@@ -373,7 +381,9 @@ function deliveryEmailHtml(
       <a href="${fileUrl}" class="btn">⬇ Download Your File</a>
     </div>
     <p style="color:#888;font-size:13px;margin-top:24px;">If the button doesn't work, copy this link: <br><a href="${fileUrl}" style="word-break:break-all;color:#1B5E20">${fileUrl}</a></p>
-    <p style="color:#888;font-size:13px">Need revisions within your plan scope? Simply reply to this email.</p>
+    <p style="color:#888;font-size:13px;margin-top:24px;border-top:1px solid #eee;padding-top:16px;">
+      Need revisions within your plan scope or have any queries? Please write to our contact on WhatsApp.
+    </p>
   </div>
   <div class="footer">ResearchScholars.online · PhD-led academic support</div>
 </div>

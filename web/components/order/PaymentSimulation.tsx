@@ -44,8 +44,8 @@ export function PaymentSimulation({
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
-  const [emailVerified, setEmailVerified] = useState(true); // TEMPORARY: bypassed for now
-  const [phoneVerified, setPhoneVerified] = useState(true); // TEMPORARY: bypassed for now
+  const [emailVerified, setEmailVerified] = useState(false);
+  const [phoneVerified, setPhoneVerified] = useState(true);
   const [emailOtp, setEmailOtp] = useState("");
   const [phoneOtp, setPhoneOtp] = useState("");
   const [emailForOtp, setEmailForOtp] = useState("");
@@ -311,57 +311,54 @@ export function PaymentSimulation({
               </p>
             )}
 
-            {/* TEMPORARILY DISABLED OTP VERIFICATION
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-              <button
-                type="button"
-                onClick={async () => {
-                  const emailEl = document.querySelector<HTMLInputElement>('input[name="email"]');
-                  if (!emailEl?.value) return;
-                  setEmailForOtp(emailEl.value);
-                  await fetch("/api/verification/send", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "email", value: emailEl.value }) });
-                }}
-                className="rounded-btn border border-surface-line px-4 py-2 text-xs font-semibold text-ink"
-              >
-                Send Email OTP
-              </button>
-              <button
-                type="button"
-                onClick={async () => {
-                  const phoneEl = document.querySelector<HTMLInputElement>('input[name="phone"]');
-                  if (!phoneEl?.value) return;
-                  setPhoneForOtp(phoneEl.value);
-                  await fetch("/api/verification/send", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "phone", value: phoneEl.value }) });
-                }}
-                className="rounded-btn border border-surface-line px-4 py-2 text-xs font-semibold text-ink"
-              >
-                Send Phone OTP
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-              <div className="flex gap-2">
-                <input value={emailOtp} onChange={(event) => setEmailOtp(event.target.value)} placeholder="Email OTP" className="w-full rounded-lg border border-surface-line/80 bg-white px-3 py-2 text-sm" />
-                <button type="button" className="rounded-btn border border-surface-line px-3 py-2 text-xs" onClick={async () => {
-                  const res = await fetch("/api/verification/verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "email", value: emailForOtp, code: emailOtp }) });
-                  const json = await res.json();
-                  setEmailVerified(Boolean(json.success));
-                }}>Verify</button>
+            {!emailVerified ? (
+              <div className="rounded-xl border border-brand-primary/20 bg-brand-primary/5 p-4 space-y-3">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="font-semibold text-brand-deep">Verify your email to continue</span>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const emailEl = document.querySelector<HTMLInputElement>('input[name="email"]');
+                      if (!emailEl?.value) {
+                         alert("Please enter your email address first.");
+                         return;
+                      }
+                      setEmailForOtp(emailEl.value);
+                      await fetch("/api/verification/send", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "email", value: emailEl.value }) });
+                      alert("Code sent! Check your inbox.");
+                    }}
+                    className="rounded-lg bg-brand-primary/10 px-3 py-1.5 text-xs font-semibold text-brand-deep hover:bg-brand-primary/20 transition"
+                  >
+                    Send Code
+                  </button>
+                </div>
+                <div className="flex gap-2">
+                  <input
+                     value={emailOtp}
+                     onChange={(e) => setEmailOtp(e.target.value)}
+                     placeholder="Enter 6-digit code"
+                     className="w-full rounded-lg border border-surface-line/80 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-brand-primary focus:ring-1 focus:ring-brand-primary"
+                  />
+                  <button
+                     type="button"
+                     className="rounded-lg bg-brand-deep px-4 py-2.5 text-sm font-semibold text-white shadow-card transition hover:bg-brand-primary"
+                     onClick={async () => {
+                        const res = await fetch("/api/verification/verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "email", value: emailForOtp, code: emailOtp }) });
+                        const json = await res.json();
+                        if (json.success) setEmailVerified(true);
+                        else alert("Invalid or expired code. Please try again.");
+                     }}
+                  >
+                    Verify
+                  </button>
+                </div>
               </div>
-              <div className="flex gap-2">
-                <input value={phoneOtp} onChange={(event) => setPhoneOtp(event.target.value)} placeholder="Phone OTP" className="w-full rounded-lg border border-surface-line/80 bg-white px-3 py-2 text-sm" />
-                <button type="button" className="rounded-btn border border-surface-line px-3 py-2 text-xs" onClick={async () => {
-                  const res = await fetch("/api/verification/verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "phone", value: phoneForOtp, code: phoneOtp }) });
-                  const json = await res.json();
-                  setPhoneVerified(Boolean(json.success));
-                }}>Verify</button>
+            ) : (
+              <div className="flex items-center gap-2 text-xs font-medium text-brand-primary bg-brand-primary/5 border border-brand-primary/20 rounded-lg px-4 py-3">
+                <CheckCircle className="h-4 w-4" weight="fill" />
+                Email verified successfully
               </div>
-            </div>
-
-            <p className="text-xs text-ink-muted">
-              Email verification: {emailVerified ? "✓ verified" : "pending"} · Phone verification: {phoneVerified ? "✓ verified" : "pending"}
-            </p>
-            */}
+            )}
 
             <button
               type="submit"
