@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  MagnifyingGlass, Users, Envelope, Phone, Buildings, ArrowRight, X, CurrencyInr, ListBullets,
+  MagnifyingGlass, Users, Envelope, Phone, Buildings, ArrowRight, X, CurrencyInr, ListBullets, Trash
 } from "@phosphor-icons/react";
 import { getCustomerOrders } from "@/lib/actions/customers";
+import { deleteCustomer } from "@/lib/actions/admin";
+import { useRouter } from "next/navigation";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function Customers({ customers }: { customers: any[] }) {
@@ -15,6 +17,8 @@ export function Customers({ customers }: { customers: any[] }) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [customerOrders, setCustomerOrders] = useState<any[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const router = useRouter();
 
   const filtered = customers.filter((c) => {
     const q = search.toLowerCase();
@@ -35,6 +39,22 @@ export function Customers({ customers }: { customers: any[] }) {
       setCustomerOrders([]);
     } finally {
       setLoadingOrders(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!selected) return;
+    if (confirm(`Are you sure you want to completely delete customer ${selected.name}? This will remove them from the table.`)) {
+      setIsDeleting(true);
+      try {
+        await deleteCustomer(selected.id);
+        setSelected(null);
+        router.refresh(); // Or rely on revalidatePath
+      } catch (err) {
+        console.error("Failed to delete", err);
+      } finally {
+        setIsDeleting(false);
+      }
     }
   };
 
@@ -144,6 +164,15 @@ export function Customers({ customers }: { customers: any[] }) {
                   <h2 className="text-base font-heading font-bold text-white truncate">{selected.name}</h2>
                   {selected.institution && <p className="text-xs text-white/40 mt-0.5 truncate">{selected.institution}</p>}
                 </div>
+                <button
+                  type="button"
+                  disabled={isDeleting}
+                  onClick={handleDelete}
+                  className="p-2 rounded-xl text-red-400 hover:bg-red-500/10 transition"
+                  title="Delete Customer"
+                >
+                  <Trash className="h-4 w-4" />
+                </button>
                 <button onClick={() => setSelected(null)} className="p-2 rounded-xl hover:bg-white/5 transition text-white/40">
                   <X className="h-5 w-5" />
                 </button>

@@ -14,3 +14,18 @@ export async function toggleBlogPublish(id: string, publish: boolean) {
   revalidatePath("/blog");
 }
 
+export async function deleteBlog(id: string) {
+  const db = createAdminClient();
+  const { error } = await db.from("blogs").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath("/admin/blog");
+  revalidatePath("/blog");
+}
+
+export async function deleteBlogCategory(id: string) {
+  const db = createAdminClient();
+  const { error } = await db.from("blog_categories").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath("/admin/blog/categories");
+  revalidatePath("/blog");
+}

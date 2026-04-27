@@ -16,6 +16,7 @@ import {
   WhatsappLogo,
 } from "@phosphor-icons/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import {
   addManualPayment,
@@ -28,7 +29,7 @@ import {
   updateOrderStatus,
   uploadDeliveryFile,
 } from "@/lib/actions/orders";
-import { sendOrderConfirmationAsAdmin } from "@/lib/actions/admin";
+import { sendOrderConfirmationAsAdmin, deleteOrder } from "@/lib/actions/admin";
 import { sendDeliveryEmail, sendWhatsAppDelivery } from "@/lib/actions/notifications";
 import { displayPaymentStatus, toDbPaymentStatus } from "@/lib/orders/db-maps";
 
@@ -111,7 +112,9 @@ export function OrderDetail({ order, transactions: initialTx }: { order: any; tr
   const [notifMsg, setNotifMsg] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [isDeleting, setIsDeleting] = useState(false);
   const fileRef = useRef<HTMLInputElement | null>(null);
+  const router = useRouter();
 
   // Inline manual payment form state
   const [showPayForm, setShowPayForm] = useState(false);
@@ -242,13 +245,31 @@ export function OrderDetail({ order, transactions: initialTx }: { order: any; tr
   return (
     <div className="mx-auto max-w-6xl space-y-6">
       <div>
-        <Link
-          href="/admin/orders"
-          className="group mb-4 inline-flex items-center gap-2 text-xs text-white/30 transition hover:text-white/60"
-        >
-          <ArrowLeft className="h-4 w-4 transition group-hover:-translate-x-0.5" />
-          All orders
-        </Link>
+        <div className="flex items-center justify-between mb-4">
+          <Link
+            href="/admin/orders"
+            className="group inline-flex items-center gap-2 text-xs text-white/30 transition hover:text-white/60"
+          >
+            <ArrowLeft className="h-4 w-4 transition group-hover:-translate-x-0.5" />
+            All orders
+          </Link>
+          <button
+            type="button"
+            disabled={isDeleting}
+            onClick={() => {
+              if (confirm(`Are you absolutely sure you want to delete order ${order.order_no}? This action cannot be undone.`)) {
+                setIsDeleting(true);
+                startTransition(async () => {
+                  await deleteOrder(order.id);
+                  router.push("/admin/orders");
+                });
+              }
+            }}
+            className="text-xs text-red-500/80 hover:text-red-400 font-medium transition"
+          >
+            {isDeleting ? "Deleting..." : "Delete Order"}
+          </button>
+        </div>
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="mb-1 font-mono text-[11px] uppercase tracking-widest text-white/30">Order · {order.order_no}</p>

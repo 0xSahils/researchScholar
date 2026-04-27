@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useTransition } from "react";
-import { toggleBlogPublish } from "@/lib/actions/blog-admin";
+import { toggleBlogPublish, deleteBlog } from "@/lib/actions/blog-admin";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function BlogAdminTable({ blogs }: { blogs: any[] }) {
@@ -26,15 +26,27 @@ export function BlogAdminTable({ blogs }: { blogs: any[] }) {
             <p>{blog.category ?? "General"}</p>
             <p>{blog.is_published ? "Published" : "Draft"}</p>
             <p>{blog.view_count ?? 0}</p>
-            <div className="flex items-center gap-2">
-              <Link href={`/admin/blog/${blog.id}/edit`} className="text-brand-accent">Edit</Link>
+            <div className="flex items-center gap-3">
+              <Link href={`/admin/blog/${blog.id}/edit`} className="text-brand-accent hover:underline">Edit</Link>
               <button
                 type="button"
                 disabled={pending}
-                className="text-brand-light"
+                className="text-brand-light hover:underline"
                 onClick={() => startTransition(async () => { await toggleBlogPublish(blog.id, !blog.is_published); })}
               >
                 {blog.is_published ? "Unpublish" : "Publish"}
+              </button>
+              <button
+                type="button"
+                disabled={pending}
+                className="text-red-400/60 hover:text-red-400 hover:underline"
+                onClick={() => {
+                  if (confirm(`Delete blog post: "${blog.title}"?\nThis cannot be undone.`)) {
+                    startTransition(async () => { await deleteBlog(blog.id); });
+                  }
+                }}
+              >
+                Delete
               </button>
             </div>
           </div>

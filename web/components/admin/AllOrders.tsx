@@ -2,11 +2,12 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { motion } from "framer-motion";
-import { DownloadSimple, MagnifyingGlass, Funnel, ArrowRight } from "@phosphor-icons/react";
+import { DownloadSimple, MagnifyingGlass, Funnel, ArrowRight, Trash } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 import { displayPaymentStatus } from "@/lib/orders/db-maps";
+import { deleteOrder } from "@/lib/actions/admin";
 
 const workMeta: Record<string, { label: string; color: string; dot: string }> = {
   pending: { label: "Pending", color: "text-slate-300 bg-slate-500/15", dot: "bg-slate-400" },
@@ -32,7 +33,7 @@ export function AllOrders({ orders, total }: { orders: any[]; total: number }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
 
   const currentQ = searchParams.get("q") ?? "";
   const currentStatus = searchParams.get("status") ?? "all";
@@ -197,12 +198,29 @@ export function AllOrders({ orders, total }: { orders: any[]; total: number }) {
                   {pm.label}
                 </span>
                 <p className="font-mono text-xs text-white/70 sm:text-sm">₹{Number(order.price).toLocaleString("en-IN")}</p>
-                <Link
-                  href={`/admin/orders/${order.id}`}
-                  className="group/btn flex items-center gap-1 whitespace-nowrap text-xs text-white/30 hover:text-emerald-400"
-                >
-                  View <ArrowRight className="h-3.5 w-3.5 transition group-hover/btn:translate-x-0.5" />
-                </Link>
+                <div className="flex items-center gap-2">
+                  <Link
+                    href={`/admin/orders/${order.id}`}
+                    className="group/btn flex items-center gap-1 whitespace-nowrap text-xs text-brand-primary hover:text-brand-accent transition"
+                  >
+                    View <ArrowRight className="h-3.5 w-3.5 transition group-hover/btn:translate-x-0.5" />
+                  </Link>
+                  <button
+                    type="button"
+                    disabled={isPending}
+                    onClick={() => {
+                      if (confirm(`Delete order ${order.order_no}?\nThis action cannot be undone.`)) {
+                        startTransition(async () => {
+                          await deleteOrder(order.id);
+                        });
+                      }
+                    }}
+                    className="p-1.5 text-white/20 hover:bg-red-500/10 hover:text-red-400 rounded-md transition"
+                    title="Delete Order"
+                  >
+                    <Trash className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
             );
           })

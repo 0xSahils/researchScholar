@@ -201,3 +201,17 @@ export async function getPublicSettings(): Promise<{ gst_rate: number; google_an
   }
 }
 
+export async function deleteOrder(id: string) {
+  const db = createAdminClient();
+  const { error } = await db.from("orders").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath("/admin/orders");
+}
+
+export async function deleteCustomer(id: string) {
+  const db = createAdminClient();
+  const { error } = await db.from("customers").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath("/admin/customers");
+}
+
