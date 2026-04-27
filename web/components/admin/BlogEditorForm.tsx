@@ -78,7 +78,7 @@ export function BlogEditorForm({ categories, initial }: { categories: any[]; ini
                       ? { type, url: "", alt: "" }
                       : type === "divider"
                         ? { type }
-                        : { type: "paragraph", content: "" };
+                        : { type, content: "" } as any;
                   setContent(next);
                 }}
                 className="mb-3 rounded border border-zinc-200 bg-zinc-50 px-2 py-1 text-xs text-zinc-800 outline-none w-auto block select-none"
@@ -93,7 +93,7 @@ export function BlogEditorForm({ categories, initial }: { categories: any[]; ini
               </select>
 
               {/* RENDER BLOCK INPUTS */}
-              {"content" in block && block.type !== "image" ? (
+              {"content" in block ? (
                 <textarea
                   value={block.content}
                   onChange={(event) => {
