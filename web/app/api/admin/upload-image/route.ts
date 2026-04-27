@@ -27,18 +27,26 @@ export async function POST(request: Request) {
 
     const db = createAdminClient();
 
-    // Ensure bucket exists or we just use public 'blog-images'
-    // You should create a bucket named 'blog-images' in your Supabase dashboard and set it to public
+    // Check if bucket exists, if not attempt to create it
+    const { data: buckets, error: bucketsError } = await db.storage.listBuckets();
+    if (!bucketsError) {
+      const bucketExists = buckets.some((b) => b.name === "blog-images");
+      if (!bucketExists) {
+        // Attempt to create it publicly
+        await db.storage.createBucket("blog-images", { public: true });
+      }
+    }
+
     const { data: uploadData, error: uploadError } = await db.storage
       .from("blog-images")
       .upload(fileName, buffer, {
         contentType: type,
         cacheControl: "3600",
-        upsert: false,
+        upsert: true,
       });
 
     if (uploadError) {
-      console.error("Storage upload error:", uploadError);
+      console.error("Storage upload error details:", uploadError);
       return NextResponse.json({ error: uploadError.message }, { status: 500 });
     }
 
@@ -47,7 +55,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ url: publicUrlData.publicUrl }, { status: 200 });
   } catch (error) {
-    console.error("Image upload exception:", error);
+    console.error("Image upload exception details:", error);
     return NextResponse.json({ error: "Failed to upload image" }, { status: 500 });
   }
 }
