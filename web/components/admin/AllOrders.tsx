@@ -119,9 +119,9 @@ export function AllOrders({ orders, total }: { orders: any[]; total: number }) {
             onChange={(e) => updateParams({ status: e.target.value })}
             className="w-full cursor-pointer appearance-none rounded-xl border border-white/[0.08] bg-white/[0.04] py-2.5 pl-10 pr-8 text-sm text-white/70 outline-none focus:border-brand-accent/50"
           >
-            <option value="all">All work statuses</option>
+            <option value="all" className="bg-slate-900 text-white">All work statuses</option>
             {Object.keys(workMeta).map((s) => (
-              <option key={s} value={s}>
+              <option key={s} value={s} className="bg-slate-900 text-white">
                 {workMeta[s]?.label ?? s}
               </option>
             ))}
@@ -134,11 +134,11 @@ export function AllOrders({ orders, total }: { orders: any[]; total: number }) {
             onChange={(e) => updateParams({ payment: e.target.value })}
             className="w-full cursor-pointer appearance-none rounded-xl border border-white/[0.08] bg-white/[0.04] py-2.5 pl-10 pr-8 text-sm text-white/70 outline-none focus:border-brand-accent/50"
           >
-            <option value="all">All payments</option>
-            <option value="pending">Unpaid</option>
-            <option value="partial">Advance paid</option>
-            <option value="paid">Fully paid</option>
-            <option value="refunded">Refunded</option>
+            <option value="all" className="bg-slate-900 text-white">All payments</option>
+            <option value="pending" className="bg-slate-900 text-white">Unpaid</option>
+            <option value="partial" className="bg-slate-900 text-white">Advance paid</option>
+            <option value="paid" className="bg-slate-900 text-white">Fully paid</option>
+            <option value="refunded" className="bg-slate-900 text-white">Refunded</option>
           </select>
         </div>
       </div>
