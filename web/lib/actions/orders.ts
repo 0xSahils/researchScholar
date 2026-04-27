@@ -203,11 +203,11 @@ export async function getDashboardStats() {
     db.from("orders").select("*", { count: "exact", head: true }).in("work_status", ["pending", "assigned", "in_progress", "under_review"]),
     db.from("orders").select("*", { count: "exact", head: true }).in("work_status", ["completed", "delivered"]),
     db.from("customers").select("*", { count: "exact", head: true }),
-    db.from("payments").select("amount, paid_on").eq("status", "paid"),
+    db.from("payment_transactions").select("amount, created_at").eq("status", "captured"),
     db.from("orders").select("id, balance_amount, payment_status").or("payment_status.eq.pending,payment_status.eq.partial"),
     db.from("orders").select("*").order("created_at", { ascending: false }).limit(10),
     db.from("orders").select("work_status").limit(500),
-    db.from("payments").select("amount").eq("status", "paid").gte("paid_on", startOfMonth.toISOString()),
+    db.from("payment_transactions").select("amount").eq("status", "captured").gte("created_at", startOfMonth.toISOString()),
     db
       .from("orders")
       .select("id, order_no, deadline, work_status")
@@ -228,13 +228,13 @@ export async function getDashboardStats() {
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
   const { data: recentPaid } = await db
-    .from("payments")
-    .select("amount, paid_on")
-    .eq("status", "paid")
-    .gte("paid_on", thirtyDaysAgo.toISOString());
+    .from("payment_transactions")
+    .select("amount, created_at")
+    .eq("status", "captured")
+    .gte("created_at", thirtyDaysAgo.toISOString());
   const dayTotals: Record<string, number> = {};
-  (recentPaid ?? []).forEach((p: { amount: number; paid_on: string }) => {
-    const d = new Date(p.paid_on).toISOString().slice(0, 10);
+  (recentPaid ?? []).forEach((p: { amount: number; created_at: string }) => {
+    const d = new Date(p.created_at).toISOString().slice(0, 10);
     dayTotals[d] = (dayTotals[d] ?? 0) + Number(p.amount);
   });
   const revenueLast30Days = Object.entries(dayTotals)
@@ -263,14 +263,14 @@ export async function getMonthlyEarnings() {
   const sixMonthsAgo = new Date();
   sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
   const { data } = await db
-    .from("payments")
-    .select("amount, paid_on")
-    .eq("status", "paid")
-    .gte("paid_on", sixMonthsAgo.toISOString());
+    .from("payment_transactions")
+    .select("amount, created_at")
+    .eq("status", "captured")
+    .gte("created_at", sixMonthsAgo.toISOString());
 
   const monthMap: Record<string, number> = {};
-  (data ?? []).forEach((p: { amount: number; paid_on: string }) => {
-    const month = new Date(p.paid_on).toLocaleString("en-IN", { month: "short" });
+  (data ?? []).forEach((p: { amount: number; created_at: string }) => {
+    const month = new Date(p.created_at).toLocaleString("en-IN", { month: "short" });
     monthMap[month] = (monthMap[month] ?? 0) + Number(p.amount);
   });
   return Object.entries(monthMap).map(([month, earnings]) => ({ month, earnings }));

@@ -117,7 +117,8 @@ export function OrderDetail({ order, transactions: initialTx }: { order: any; tr
   const [showPayForm, setShowPayForm] = useState(false);
   const [payFormAmount, setPayFormAmount] = useState("");
   const [payFormMethod, setPayFormMethod] = useState("UPI");
-  const [payFormType, setPayFormType] = useState<"advance" | "balance" | "full">("advance");
+  const defaultPayType = order.payment_status === "partial" ? "balance" : "advance";
+  const [payFormType, setPayFormType] = useState<"advance" | "balance" | "full">(defaultPayType);
   const [payFormRef, setPayFormRef] = useState("");
   const [payFormNotes, setPayFormNotes] = useState("");
 
@@ -476,15 +477,17 @@ export function OrderDetail({ order, transactions: initialTx }: { order: any; tr
                   className="mt-1 w-full rounded-lg border border-white/[0.08] bg-transparent px-2 py-1.5 text-sm text-white"
                 />
               </label>
-              <label className="text-xs text-white/50">
-                Advance (₹) optional
-                <input
-                  value={advanceAmount}
-                  onChange={(e) => setAdvanceAmount(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-white/[0.08] bg-transparent px-2 py-1.5 text-sm text-white"
-                  placeholder="default 50% of total"
-                />
-              </label>
+              {paymentSelectValue !== "paid" && (
+                <label className="text-xs text-white/50">
+                  Advance (₹) optional
+                  <input
+                    value={advanceAmount}
+                    onChange={(e) => setAdvanceAmount(e.target.value)}
+                    className="mt-1 w-full rounded-lg border border-white/[0.08] bg-transparent px-2 py-1.5 text-sm text-white"
+                    placeholder="default 50% of total"
+                  />
+                </label>
+              )}
             </div>
             <button
               type="button"
@@ -512,17 +515,18 @@ export function OrderDetail({ order, transactions: initialTx }: { order: any; tr
           </div>
 
           {/* ── Add Manual Payment (inline form) ── */}
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
-            <button
-              type="button"
-              onClick={() => setShowPayForm((v) => !v)}
-              className="flex w-full items-center justify-between px-4 py-3 text-sm text-white/80 hover:bg-white/5 transition"
-            >
-              <span className="font-semibold">+ Record manual payment</span>
-              <span className="text-white/30 text-xs">{showPayForm ? "▲ Close" : "▼ Open"}</span>
-            </button>
-            {showPayForm && (
-              <div className="border-t border-white/[0.06] px-4 py-4 space-y-3">
+          {paymentSelectValue !== "paid" && (
+            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setShowPayForm((v) => !v)}
+                className="flex w-full items-center justify-between px-4 py-3 text-sm text-white/80 hover:bg-white/5 transition"
+              >
+                <span className="font-semibold">+ Record manual payment</span>
+                <span className="text-white/30 text-xs">{showPayForm ? "▲ Close" : "▼ Open"}</span>
+              </button>
+              {showPayForm && (
+                <div className="border-t border-white/[0.06] px-4 py-4 space-y-3">
                 <div className="grid gap-3 md:grid-cols-2">
                   <div>
                     <label className="mb-1 block text-[10px] uppercase tracking-widest text-white/30">Amount (₹) *</label>
@@ -550,7 +554,7 @@ export function OrderDetail({ order, transactions: initialTx }: { order: any; tr
                     <label className="mb-1 block text-[10px] uppercase tracking-widest text-white/30">Payment Type</label>
                     <select value={payFormType} onChange={(e) => setPayFormType(e.target.value as "advance" | "balance" | "full")}
                       className="w-full rounded-lg border border-white/[0.1] bg-[#0d1410] px-3 py-2 text-sm text-white">
-                      <option value="advance">Advance</option>
+                      {paymentSelectValue !== "partial" && <option value="advance">Advance</option>}
                       <option value="balance">Balance</option>
                       <option value="full">Full Payment</option>
                     </select>
@@ -583,8 +587,9 @@ export function OrderDetail({ order, transactions: initialTx }: { order: any; tr
                   {isPending ? "Saving…" : "Record Payment"}
                 </button>
               </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
 
           {/* ── Send Confirmation Email ── */}
           <button

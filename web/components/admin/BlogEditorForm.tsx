@@ -39,11 +39,11 @@ export function BlogEditorForm({ categories, initial }: { categories: any[]; ini
 
   return (
     <div className="grid gap-6 xl:grid-cols-[1.65fr_1fr]">
-      <section className="rounded-2xl border border-white/[0.06] bg-white p-6">
-        <input value={title} onChange={(event) => setTitle(event.target.value)} className="w-full border-none text-4xl font-bold outline-none" placeholder="Post Title..." />
+      <section className="rounded-2xl border border-white/[0.06] bg-white p-6 text-zinc-900">
+        <input value={title} onChange={(event) => setTitle(event.target.value)} className="w-full border-none bg-transparent text-4xl font-bold outline-none placeholder:text-zinc-400" placeholder="Post Title..." />
         <div className="mt-5 space-y-4">
           {content.map((block, index) => (
-            <div key={index} className="rounded-xl border border-surface-line p-3">
+            <div key={index} className="rounded-xl border border-zinc-200 p-3">
               <select
                 value={block.type}
                 onChange={(event) => {
@@ -56,7 +56,7 @@ export function BlogEditorForm({ categories, initial }: { categories: any[]; ini
                       : { type: "paragraph", content: "" };
                   setContent(next);
                 }}
-                className="mb-2 rounded border border-surface-line px-2 py-1 text-xs"
+                className="mb-2 rounded border border-zinc-200 bg-white px-2 py-1 text-xs text-zinc-800 outline-none"
               >
                 <option value="paragraph">Paragraph</option>
                 <option value="heading2">Heading 2</option>
@@ -71,11 +71,11 @@ export function BlogEditorForm({ categories, initial }: { categories: any[]; ini
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   (next[index] as any).content = event.target.value;
                   setContent(next);
-                }} rows={block.type === "paragraph" ? 4 : 2} className="w-full rounded border border-surface-line px-3 py-2 text-sm" />
+                }} rows={block.type === "paragraph" ? 4 : 2} className="w-full rounded border border-zinc-200 bg-transparent px-3 py-2 text-sm text-zinc-800 outline-none placeholder:text-zinc-400" />
               ) : null}
             </div>
           ))}
-          <button type="button" onClick={() => setContent((prev) => [...prev, emptyBlock])} className="rounded border border-surface-line px-3 py-1 text-xs">+ Add block</button>
+          <button type="button" onClick={() => setContent((prev) => [...prev, emptyBlock])} className="rounded border border-zinc-300 px-3 py-1 text-xs text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900">+ Add block</button>
         </div>
       </section>
       <aside className="space-y-4 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 text-white">
