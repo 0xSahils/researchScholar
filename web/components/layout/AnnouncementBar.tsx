@@ -12,7 +12,7 @@ export function AnnouncementBar() {
   const loop = [...tickerItems, ...tickerItems];
 
   return (
-    <div className="relative z-[60] flex h-9 items-center overflow-hidden bg-brand-primary text-xs text-white md:text-sm">
+    <div className="sticky top-0 z-[80] flex h-9 items-center overflow-hidden bg-brand-primary text-xs text-white md:text-sm">
       <div className="flex min-w-0 flex-1 items-center">
         <div className="animate-marquee flex whitespace-nowrap hover:[animation-play-state:paused]">
           {loop.map((item, index) => (

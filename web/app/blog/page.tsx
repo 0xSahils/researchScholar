@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
+import { FeaturedCarousel } from "@/components/blog/FeaturedCarousel";
 
 import { getBlogCategories, getPopularBlogs, getPublishedBlogs } from "@/lib/actions/blogs";
 
@@ -26,7 +27,7 @@ export default async function BlogPage({
     getPopularBlogs(5),
   ]);
   const totalPages = Math.max(1, Math.ceil(total / 9));
-  const featured = blogs[0];
+  const featuredBlogs = blogs.slice(0, 3);
 
   return (
     <main className="mx-auto max-w-content px-6 py-14 lg:px-8">
@@ -36,22 +37,7 @@ export default async function BlogPage({
         <p className="mt-3 max-w-2xl text-sm text-white/80">Evidence-backed practical guidance written for serious researchers and postgraduate scholars.</p>
       </section>
 
-      {featured ? (
-        <section className="mt-8 overflow-hidden rounded-[1.5rem] border border-surface-line bg-white shadow-card">
-          <div className="relative h-[340px]">
-            <Image src={featured.cover_image_url ?? "https://picsum.photos/seed/blog-featured/1280/720"} alt={featured.title} fill className="object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 p-6 text-white">
-              <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-semibold">{featured.category ?? "General"}</span>
-              <h2 className="mt-3 max-w-2xl font-heading text-3xl font-bold">{featured.title}</h2>
-              <p className="mt-2 max-w-2xl text-sm text-white/80">{featured.excerpt}</p>
-              <Link href={`/blog/${featured.slug}`} className="mt-4 inline-flex items-center gap-1 text-sm font-semibold">
-                Read Article <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
-          </div>
-        </section>
-      ) : null}
+      <FeaturedCarousel features={featuredBlogs} />
 
       <div className="mt-8 flex flex-wrap gap-2">
         <Link href="/blog" className={`rounded-full px-4 py-1.5 text-xs font-semibold ${category === "all" ? "bg-brand-primary text-white" : "border border-surface-line bg-white text-ink"}`}>All</Link>
