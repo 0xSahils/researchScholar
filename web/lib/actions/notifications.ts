@@ -84,10 +84,11 @@ export async function sendAdminNewOrderAlert(
   try {
     const resend = getResend();
     const from = process.env.RESEND_FROM_EMAIL ?? "updates@researchscholar.online";
+    const adminEmails = process.env.ADMIN_EMAIL.split(",").map((e) => e.trim()).filter(Boolean);
 
     await resend.emails.send({
       from,
-      to: process.env.ADMIN_EMAIL,
+      to: adminEmails,
       subject: `🆕 New Order — ${order.orderNo} (${order.service})`,
       html: adminNewOrderHtml(order),
     });
