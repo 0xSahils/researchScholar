@@ -6,7 +6,7 @@ import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
 
 import { BlogContentRenderer } from "@/components/blog/BlogContentRenderer";
 import { BlogReadingProgress } from "@/components/blog/BlogReadingProgress";
-import { BlogTableOfContents, buildTocFromBlocks } from "@/components/blog/BlogTableOfContents";
+import { BlogTableOfContents } from "@/components/blog/BlogTableOfContents";
 import { getAllPublishedSlugs, getBlogBySlug, getPublishedBlogs, incrementBlogView } from "@/lib/actions/blogs";
 import { siteConfig } from "@/lib/site-config";
 
@@ -82,8 +82,6 @@ export default async function BlogDetailPage({ params }: { params: { slug: strin
     mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
   };
 
-  const tocItems = buildTocFromBlocks(post.content);
-
   return (
     <main>
       <BlogReadingProgress />
@@ -110,7 +108,7 @@ export default async function BlogDetailPage({ params }: { params: { slug: strin
           </div>
         </article>
         <aside className="space-y-4">
-          <BlogTableOfContents items={tocItems} />
+          <BlogTableOfContents blocks={post.content} />
           <div className="rounded-card border border-surface-line bg-white p-4">
             <h3 className="font-semibold text-ink">Related posts</h3>
             <div className="mt-3 space-y-2">

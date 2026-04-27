@@ -4,7 +4,16 @@ import type { BlogBlock } from "@/lib/actions/blogs";
 
 export type TocItem = { index: number; level: "heading2" | "heading3"; text: string };
 
-export function BlogTableOfContents({ items }: { items: TocItem[] }) {
+export function BlogTableOfContents({ blocks }: { blocks: BlogBlock[] | null | undefined }) {
+  if (!blocks?.length) return null;
+
+  const items: TocItem[] = [];
+  blocks.forEach((block, index) => {
+    if (block.type === "heading2" || block.type === "heading3") {
+      items.push({ index, level: block.type, text: block.content });
+    }
+  });
+
   if (items.length === 0) return null;
 
   return (
@@ -21,15 +30,4 @@ export function BlogTableOfContents({ items }: { items: TocItem[] }) {
       </ul>
     </nav>
   );
-}
-
-export function buildTocFromBlocks(blocks: BlogBlock[] | null | undefined): TocItem[] {
-  if (!blocks?.length) return [];
-  const out: TocItem[] = [];
-  blocks.forEach((block, index) => {
-    if (block.type === "heading2" || block.type === "heading3") {
-      out.push({ index, level: block.type, text: block.content });
-    }
-  });
-  return out;
 }
