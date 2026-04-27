@@ -50,6 +50,7 @@ export function PaymentSimulation({
   const [phoneOtp, setPhoneOtp] = useState("");
   const [emailForOtp, setEmailForOtp] = useState("");
   const [phoneForOtp, setPhoneForOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
 
   const { base, gstAmount, total } = applyGst(service.basePrice, gstRate);
 
@@ -325,33 +326,36 @@ export function PaymentSimulation({
                       }
                       setEmailForOtp(emailEl.value);
                       await fetch("/api/verification/send", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "email", value: emailEl.value }) });
+                      setOtpSent(true);
                       alert("Code sent! Check your inbox.");
                     }}
                     className="rounded-lg bg-brand-primary/10 px-3 py-1.5 text-xs font-semibold text-brand-deep hover:bg-brand-primary/20 transition"
                   >
-                    Send Code
+                    {otpSent ? "Resend Code" : "Send Code"}
                   </button>
                 </div>
-                <div className="flex gap-2">
-                  <input
-                     value={emailOtp}
-                     onChange={(e) => setEmailOtp(e.target.value)}
-                     placeholder="Enter 6-digit code"
-                     className="w-full rounded-lg border border-surface-line/80 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-brand-primary focus:ring-1 focus:ring-brand-primary"
-                  />
-                  <button
-                     type="button"
-                     className="rounded-lg bg-brand-deep px-4 py-2.5 text-sm font-semibold text-white shadow-card transition hover:bg-brand-primary"
-                     onClick={async () => {
-                        const res = await fetch("/api/verification/verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "email", value: emailForOtp, code: emailOtp }) });
-                        const json = await res.json();
-                        if (json.success) setEmailVerified(true);
-                        else alert("Invalid or expired code. Please try again.");
-                     }}
-                  >
-                    Verify
-                  </button>
-                </div>
+                {otpSent && (
+                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="flex gap-2 relative mt-4 pt-2">
+                    <input
+                       value={emailOtp}
+                       onChange={(e) => setEmailOtp(e.target.value)}
+                       placeholder="Enter 6-digit code"
+                       className="w-full rounded-lg border border-surface-line/80 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-brand-primary focus:ring-1 focus:ring-brand-primary"
+                    />
+                    <button
+                       type="button"
+                       className="rounded-lg bg-brand-deep px-4 py-2.5 text-sm font-semibold text-white shadow-card transition hover:bg-brand-primary"
+                       onClick={async () => {
+                          const res = await fetch("/api/verification/verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "email", value: emailForOtp, code: emailOtp }) });
+                          const json = await res.json();
+                          if (json.success) setEmailVerified(true);
+                          else alert("Invalid or expired code. Please try again.");
+                       }}
+                    >
+                      Verify
+                    </button>
+                  </motion.div>
+                )}
               </div>
             ) : (
               <div className="flex items-center gap-2 text-xs font-medium text-brand-primary bg-brand-primary/5 border border-brand-primary/20 rounded-lg px-4 py-3">

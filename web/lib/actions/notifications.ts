@@ -99,7 +99,8 @@ export async function sendAdminNewOrderAlert(
 
 export async function sendDeliveryEmail(
   order: OrderNotificationData & { customerEmail: string },
-  fileUrl: string
+  fileUrl: string,
+  versionLabel?: string
 ): Promise<{ success: boolean; error?: string }> {
   if (!process.env.RESEND_API_KEY) {
     return { success: false, error: "RESEND_API_KEY not configured" };
@@ -112,8 +113,8 @@ export async function sendDeliveryEmail(
     await resend.emails.send({
       from,
       to: order.customerEmail,
-      subject: `✅ Your ${order.service} is ready — ${order.orderNo}`,
-      html: deliveryEmailHtml(order, fileUrl),
+      subject: `✅ Your ${order.service} is ready — ${order.orderNo}${versionLabel ? ` (${versionLabel})` : ""}`,
+      html: deliveryEmailHtml(order, fileUrl, versionLabel),
     });
     return { success: true };
   } catch (err) {
@@ -121,6 +122,30 @@ export async function sendDeliveryEmail(
     return { success: false, error: String(err) };
   }
 }
+
+export async function sendOrderStatusUpdateEmail(
+  order: OrderNotificationData,
+  newStatus: string
+): Promise<void> {
+  if (!process.env.RESEND_API_KEY) return;
+
+  try {
+    const resend = getResend();
+    const from = process.env.RESEND_FROM_EMAIL ?? "updates@researchscholar.online";
+    
+    let displayStatus = newStatus.replace(/_/g, " ").toUpperCase();
+
+    await resend.emails.send({
+      from,
+      to: order.customerEmail,
+      subject: `🔔 Order Status Update: ${displayStatus} — ${order.orderNo}`,
+      html: orderStatusUpdateHtml(order, displayStatus),
+    });
+  } catch (err) {
+    console.error("[sendOrderStatusUpdateEmail]", err);
+  }
+}
+
 
 // ─── WhatsApp Notifications ───────────────────────────────────────────────────
 
@@ -356,7 +381,8 @@ function adminNewOrderHtml(order: OrderNotificationData): string {
 
 function deliveryEmailHtml(
   order: OrderNotificationData,
-  fileUrl: string
+  fileUrl: string,
+  versionLabel?: string
 ): string {
   return `<!DOCTYPE html>
 <html>
@@ -377,13 +403,62 @@ function deliveryEmailHtml(
   </div>
   <div class="body">
     <p style="color:#555;font-size:15px">Hi ${order.customerName},</p>
-    <p style="color:#555;font-size:14px;line-height:1.7">Your <strong>${order.service}</strong> (${order.orderNo}) has been completed and is ready for download. Click the button below to access your file.</p>
+    <p style="color:#555;font-size:14px;line-height:1.7">A document drop for your <strong>${order.service}</strong> (${order.orderNo}) has been dispatched.</p>
+    
+    ${versionLabel ? `<div style="background:#E8F5E9; border:1px solid #C8E6C9; color:#1B5E20; padding:12px 16px; border-radius:8px; margin:20px 0; font-size:14px; font-weight:600;">Document Stage: ${versionLabel}</div>` : ''}
+
+    <p style="color:#555;font-size:14px;line-height:1.7">Click the button below to access and download your secure file link.</p>
     <div style="text-align:center">
       <a href="${fileUrl}" class="btn">⬇ Download Your File</a>
     </div>
     <p style="color:#888;font-size:13px;margin-top:24px;">If the button doesn't work, copy this link: <br><a href="${fileUrl}" style="word-break:break-all;color:#1B5E20">${fileUrl}</a></p>
     <p style="color:#888;font-size:13px;margin-top:24px;border-top:1px solid #eee;padding-top:16px;">
       Need revisions within your plan scope or have any queries? Please write to our contact on WhatsApp.
+    </p>
+  </div>
+  <div class="footer">ResearchScholars.online · PhD-led academic support</div>
+</div>
+</body></html>`;
+}
+
+function orderStatusUpdateHtml(order: OrderNotificationData, newStatus: string): string {
+  return `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><style>
+  body { font-family: system-ui, sans-serif; background: #f5f5f5; margin: 0; padding: 20px; }
+  .card { max-width: 560px; margin: auto; background: #fff; border-radius: 12px; overflow: hidden; border: 1px solid #eee; }
+  .header { background: #1B5E20; padding: 32px; text-align: center; }
+  .header h1 { color: white; margin: 0; font-size: 22px; }
+  .body { padding: 32px; }
+  .status-badge { display: inline-block; background: #E8F5E9; color: #1B5E20; font-weight: 800; padding: 8px 16px; border-radius: 6px; font-size: 14px; letter-spacing: 1px; border: 1px solid #C8E6C9; margin: 16px 0; }
+  .row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+  .label { color: #666; } .value { font-weight: 600; color: #1a1a1a; }
+  .btn { display: inline-block; margin-top: 20px; background: #1B5E20; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 600; text-align: center; }
+  .footer { background: #f9f9f9; padding: 16px 32px; font-size: 12px; color: #888; text-align: center; }
+</style></head>
+<body>
+<div class="card">
+  <div class="header">
+    <p style="color:rgba(255,255,255,0.7);margin:0 0 8px;font-size:12px;letter-spacing:2px;text-transform:uppercase">ResearchScholars</p>
+    <h1>Order Update 🔔</h1>
+  </div>
+  <div class="body">
+    <p style="color:#555;font-size:15px;margin-top:0;">Hi ${order.customerName},</p>
+    <p style="color:#555;font-size:14px;line-height:1.6">The status of your order has changed. It is currently marked as:</p>
+    
+    <div style="text-align: center;">
+      <span class="status-badge">${newStatus}</span>
+    </div>
+
+    <div class="row"><span class="label">Order No.</span><span class="value" style="font-family:monospace">${order.orderNo}</span></div>
+    <div class="row"><span class="label">Service</span><span class="value">${order.service}</span></div>
+    
+    <div style="text-align:center;margin-top:24px">
+      <a href="https://researchscholars.online/track-order" class="btn">Track Your Order →</a>
+    </div>
+
+    <p style="color:#888;font-size:13px;margin-top:32px;border-top:1px solid #eee;padding-top:16px;">
+      For any queries, please write to our contact on WhatsApp.
     </p>
   </div>
   <div class="footer">ResearchScholars.online · PhD-led academic support</div>

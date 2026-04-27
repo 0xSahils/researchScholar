@@ -3,7 +3,7 @@
 import { createAdminClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
-import { sendDeliveryEmail, sendOrderConfirmationEmail, sendAdminNewOrderAlert } from "@/lib/actions/notifications";
+import { sendDeliveryEmail, sendOrderConfirmationEmail, sendAdminNewOrderAlert, sendOrderStatusUpdateEmail } from "@/lib/actions/notifications";
 import { toDbPaymentStatus, workStatusToDbOrderStatus } from "@/lib/orders/db-maps";
 
 // ───────────────────────────────────────────────
@@ -281,11 +281,26 @@ export async function getMonthlyEarnings() {
 // ───────────────────────────────────────────────
 export async function updateOrderStatus(id: string, workStatus: string) {
   const db = createAdminClient();
+
+  const { data: orderToUpdate } = await db.from("orders").select("*").eq("id", id).single();
+  
   const { error } = await db
     .from("orders")
     .update({ work_status: workStatus, status: workStatusToDbOrderStatus(workStatus) })
     .eq("id", id);
   if (error) throw new Error(error.message);
+
+  if (orderToUpdate) {
+    await sendOrderStatusUpdateEmail({
+      orderNo: orderToUpdate.order_no,
+      orderId: orderToUpdate.id,
+      customerName: orderToUpdate.customer_name,
+      customerEmail: orderToUpdate.customer_email,
+      service: orderToUpdate.service,
+      price: Number(orderToUpdate.total_amount ?? orderToUpdate.price)
+    }, workStatus);
+  }
+
   revalidatePath(`/admin/orders/${id}`);
   revalidatePath("/admin/orders");
   revalidatePath("/admin");
@@ -454,7 +469,8 @@ export async function sendDeliveryDocumentOneClick(
       service: order.service,
       price: Number(order.price),
     },
-    upload.url
+    upload.url,
+    versionLabel
   );
 
   revalidatePath(`/admin/orders/${orderId}`);
