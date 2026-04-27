@@ -76,6 +76,14 @@ export function BlogEditorForm({ categories, initial }: { categories: any[]; ini
                     ? { type, items: [""] }
                     : type === "image"
                       ? { type, url: "", alt: "" }
+                    : type === "quote"
+                      ? { type, content: "", author: "" }
+                    : type === "callout"
+                      ? { type, content: "", variant: "info" }
+                    : type === "link"
+                      ? { type, text: "", url: "", isExternal: false }
+                    : type === "table"
+                      ? { type, headers: ["Column 1", "Column 2"], rows: [["", ""]] }
                       : type === "divider"
                         ? { type }
                         : { type, content: "" } as any;
@@ -88,6 +96,10 @@ export function BlogEditorForm({ categories, initial }: { categories: any[]; ini
                 <option value="heading3">Heading 3</option>
                 <option value="bulletList">Bullet list</option>
                 <option value="numberedList">Numbered list</option>
+                <option value="quote">Quote</option>
+                <option value="callout">Callout Box</option>
+                <option value="link">Link</option>
+                <option value="table">Table</option>
                 <option value="image">Image</option>
                 <option value="divider">Divider</option>
               </select>
@@ -101,11 +113,152 @@ export function BlogEditorForm({ categories, initial }: { categories: any[]; ini
                     (next[index] as any).content = event.target.value;
                     setContent(next);
                   }}
-                  placeholder={block.type.startsWith("heading") ? "Heading text..." : "Start typing..."}
+                  placeholder={block.type.startsWith("heading") ? "Heading text..." : block.type === "quote" ? "Quote text..." : block.type === "callout" ? "Callout text..." : "Start typing..."}
                   rows={block.type === "paragraph" ? 4 : 2}
                   className="w-full rounded border border-zinc-200 bg-transparent px-3 py-2 text-sm text-zinc-800 outline-none placeholder:text-zinc-400"
                 />
               ) : null}
+
+              {block.type === "quote" && (
+                <input
+                  type="text"
+                  placeholder="Author (optional)"
+                  value={block.author || ""}
+                  onChange={(e) => {
+                    const next = [...content];
+                    (next[index] as any).author = e.target.value;
+                    setContent(next);
+                  }}
+                  className="w-full mt-2 rounded border border-zinc-200 bg-transparent px-3 py-1.5 text-xs text-zinc-800 outline-none"
+                />
+              )}
+
+              {block.type === "callout" && (
+                <select
+                  value={block.variant}
+                  onChange={(e) => {
+                    const next = [...content];
+                    (next[index] as any).variant = e.target.value;
+                    setContent(next);
+                  }}
+                  className="w-full mt-2 rounded border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs text-zinc-800 outline-none"
+                >
+                  <option value="info">Info (Blue)</option>
+                  <option value="warning">Warning (Orange)</option>
+                  <option value="tip">Tip (Green)</option>
+                </select>
+              )}
+
+              {block.type === "link" && (
+                <div className="grid grid-cols-2 gap-2">
+                  <input
+                    type="text"
+                    placeholder="Link Text"
+                    value={block.text}
+                    onChange={(e) => {
+                      const next = [...content];
+                      (next[index] as any).text = e.target.value;
+                      setContent(next);
+                    }}
+                    className="w-full rounded border border-zinc-200 bg-transparent px-3 py-1.5 text-xs text-zinc-800 outline-none"
+                  />
+                  <input
+                    type="text"
+                    placeholder="URL (e.g. https://...)"
+                    value={block.url}
+                    onChange={(e) => {
+                      const next = [...content];
+                      (next[index] as any).url = e.target.value;
+                      setContent(next);
+                    }}
+                    className="w-full rounded border border-zinc-200 bg-transparent px-3 py-1.5 text-xs text-zinc-800 outline-none"
+                  />
+                  <label className="col-span-2 flex items-center text-xs text-zinc-600 gap-2 font-medium select-none">
+                    <input
+                      type="checkbox"
+                      checked={!!block.isExternal}
+                      onChange={(e) => {
+                        const next = [...content];
+                        (next[index] as any).isExternal = e.target.checked;
+                        setContent(next);
+                      }}
+                    />
+                    External Link (Opens in new tab)
+                  </label>
+                </div>
+              )}
+
+              {block.type === "table" && (
+                <div className="space-y-4">
+                  <div className="overflow-x-auto border rounded-xl border-zinc-200">
+                    <table className="w-full text-left text-xs text-zinc-800 min-w-[300px]">
+                      <thead className="bg-zinc-100/50">
+                        <tr>
+                          {block.headers.map((h, cidx) => (
+                            <th key={cidx} className="p-0 border-r border-zinc-200 last:border-0 relative group/th">
+                              <input
+                                value={h}
+                                onChange={(e) => {
+                                  const n = [...content];
+                                  (n[index] as any).headers[cidx] = e.target.value;
+                                  setContent(n);
+                                }}
+                                className="w-full bg-transparent outline-none p-2 font-semibold min-w-[100px]"
+                                placeholder="Header"
+                              />
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {block.rows.map((row, ridx) => (
+                          <tr key={ridx} className="border-t border-zinc-200">
+                            {row.map((cell, cidx) => (
+                              <td key={cidx} className="p-0 border-r border-zinc-200 last:border-0">
+                                <input
+                                  value={cell}
+                                  onChange={(e) => {
+                                    const n = [...content];
+                                    (n[index] as any).rows[ridx][cidx] = e.target.value;
+                                    setContent(n);
+                                  }}
+                                  className="w-full bg-transparent outline-none p-2 min-w-[100px]"
+                                  placeholder="Cell content"
+                                />
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      className="px-3 py-1.5 rounded-lg border border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 shadow-sm text-xs font-semibold"
+                      onClick={() => {
+                        const n = [...content];
+                        (n[index] as any).headers.push(`Column ${(n[index] as any).headers.length + 1}`);
+                        (n[index] as any).rows.forEach((r: any) => r.push(""));
+                        setContent(n);
+                      }}
+                    >
+                      + Add Column
+                    </button>
+                    <button
+                      type="button"
+                      className="px-3 py-1.5 rounded-lg border border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 shadow-sm text-xs font-semibold"
+                      onClick={() => {
+                        const n = [...content];
+                        (n[index] as any).rows.push(new Array((n[index] as any).headers.length).fill(""));
+                        setContent(n);
+                      }}
+                    >
+                      + Add Row
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {"items" in block ? (
                 <div className="space-y-2">
