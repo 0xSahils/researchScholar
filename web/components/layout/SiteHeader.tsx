@@ -66,7 +66,7 @@ export function SiteHeader() {
       <div ref={sentinelRef} className="h-px w-full" aria-hidden />
       <header
         className={clsx(
-          "sticky top-0 z-[70] border-b transition-all duration-500 ease-premium",
+          "sticky top-9 z-[70] border-b transition-all duration-500 ease-premium",
           scrolled
             ? "border-surface-line/80 bg-surface-cream/95 shadow-card backdrop-blur-md"
             : "border-transparent bg-surface-cream/90 backdrop-blur-sm",
