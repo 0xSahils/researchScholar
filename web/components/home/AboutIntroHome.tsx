@@ -94,7 +94,7 @@ export function AboutIntroHome() {
               className="inline-flex items-center gap-2 rounded-btn bg-brand-primary px-5 py-2.5 text-sm font-semibold text-white shadow-card transition hover:bg-brand-deep"
             >
               <WhatsappLogo className="h-5 w-5" weight="fill" aria-hidden />
-              WhatsApp the desk
+              Contact directly
             </Link>
           </div>
         </div>

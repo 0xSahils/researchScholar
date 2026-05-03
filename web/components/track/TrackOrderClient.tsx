@@ -4,7 +4,7 @@ import { ArrowRight, CheckCircle, Clock, Envelope, Printer, Spinner, WhatsappLog
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect, useTransition } from "react";
-import { whatsappHref } from "@/lib/site-config";
+import { siteConfig, whatsappHref } from "@/lib/site-config";
 import { getOrderByNumber } from "@/lib/actions/track";
 import { fmtINR } from "@/lib/gst";
 
@@ -299,15 +299,14 @@ export function TrackOrderClient() {
             </div>
           )}
 
-          {/* CTA buttons */}
-          <div className="no-print mt-8 flex flex-wrap gap-4">
+          <div className="no-print mt-8 flex flex-wrap items-center gap-4">
             <Link href={whatsappHref("Hello, I need help tracking my order.")}
               className="inline-flex items-center gap-2 rounded-btn bg-[#25D366] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1dbf5a]">
               <WhatsappLogo className="h-5 w-5" weight="fill" />
-              WhatsApp for help
+              Contact directly
             </Link>
-            <Link href="mailto:orders@researchscholars.online"
-              className="inline-flex items-center gap-2 rounded-btn border border-surface-line bg-white px-5 py-2.5 text-sm font-semibold text-ink hover:border-brand-primary hover:text-brand-primary transition">
+            <Link href={`mailto:${siteConfig.email}`}
+              className="inline-flex items-center gap-2 rounded-btn border border-surface-line bg-white px-5 py-2.5 text-sm font-semibold text-ink transition hover:border-brand-primary hover:text-brand-primary">
               <Envelope className="h-4 w-4" />
               Email support
             </Link>

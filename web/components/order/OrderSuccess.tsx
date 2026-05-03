@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { CheckCircle, Download, ArrowRight, Printer } from "@phosphor-icons/react";
+import { CheckCircle, ArrowRight, Printer, WhatsappLogo } from "@phosphor-icons/react";
 import type { OrderServiceType } from "./OrderComposition";
 import { motion } from "framer-motion";
+
+import { siteConfig, whatsappHref } from "@/lib/site-config";
 
 export function OrderSuccess({
   service,
@@ -42,15 +44,15 @@ export function OrderSuccess({
 <body>
   <div class="header">
     <div class="brand">ResearchScholars.online</div>
-    <div class="brand-sub">PhD-led Academic Support · orders@researchscholars.online</div>
+    <div class="brand-sub">PhD-led Academic Support · ${siteConfig.email} · ${siteConfig.phoneDisplay}</div>
   </div>
-  <h2>Payment Receipt</h2>
+  <h2>Order summary</h2>
   <div class="row"><span class="label">Order No.</span><span class="value" style="font-family:monospace">${orderNo}</span></div>
   <div class="row"><span class="label">Date</span><span class="value">${date}</span></div>
   <div class="row"><span class="label">Service</span><span class="value">${service.title}</span></div>
-  <div class="row"><span class="label">Amount Paid</span><span class="value total">${service.price}</span></div>
+  <div class="row"><span class="label">Quoted total</span><span class="value total">${service.price}</span></div>
   <div class="footer">
-    This is a system-generated receipt. For any queries, email orders@researchscholars.online or WhatsApp us.<br />
+    This is a system-generated summary. For any queries, email ${siteConfig.email} or WhatsApp ${siteConfig.phoneDisplay}.<br />
     Track your order at: https://researchscholars.online/track-order
   </div>
 </body>
@@ -75,9 +77,9 @@ export function OrderSuccess({
           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white/20 shadow-inner mb-6">
             <CheckCircle className="h-10 w-10 text-white" weight="fill" />
           </div>
-          <h1 className="font-heading text-3xl font-bold text-white mb-2">Payment Successful</h1>
+          <h1 className="font-heading text-3xl font-bold text-white mb-2">Request received</h1>
           <p className="text-white/80 font-medium">
-            Your request has been saved. Check your email for confirmation.
+            We opened WhatsApp with your order details. Check your email and finish confirming on WhatsApp if the tab did not open.
           </p>
         </div>
 
@@ -100,15 +102,24 @@ export function OrderSuccess({
               <span className="font-medium text-ink">{service.title}</span>
             </div>
             <div className="flex justify-between items-center pt-2">
-              <span className="text-ink font-semibold">Total Paid</span>
+              <span className="text-ink font-semibold">Quoted total</span>
               <span className="font-heading text-2xl font-bold text-brand-primary">{service.price}</span>
             </div>
           </div>
 
-          {/* Track order link */}
+          <Link
+            href={whatsappHref(
+              `Hi, I just submitted order ${orderNo} for ${service.title}. Please confirm next steps.`,
+            )}
+            className="mt-6 flex items-center justify-center gap-2 rounded-btn bg-[#25D366]/15 border border-[#25D366]/40 px-5 py-3 text-sm font-semibold text-brand-deep hover:bg-[#25D366]/25 transition"
+          >
+            <WhatsappLogo className="h-5 w-5" weight="fill" aria-hidden />
+            Contact directly on WhatsApp
+          </Link>
+
           <Link
             href={`/track-order?order=${encodeURIComponent(orderNo)}`}
-            className="mt-6 flex items-center justify-center gap-2 rounded-btn bg-brand-light/40 border border-brand-primary/20 px-5 py-3 text-sm font-semibold text-brand-primary hover:bg-brand-light transition"
+            className="mt-3 flex items-center justify-center gap-2 rounded-btn bg-brand-light/40 border border-brand-primary/20 px-5 py-3 text-sm font-semibold text-brand-primary hover:bg-brand-light transition"
           >
             Track Order Status
             <ArrowRight className="h-4 w-4" weight="bold" />

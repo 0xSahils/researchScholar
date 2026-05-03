@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { whatsappHref } from "@/lib/site-config";
+import { ContactDirectOrderLink } from "@/components/marketing/ContactDirectOrderLink";
 
 type FutureRoutePlaceholderProps = {
   title: string;
@@ -15,7 +15,7 @@ export function FutureRoutePlaceholder({
 }: FutureRoutePlaceholderProps) {
   return (
     <section className="mx-auto max-w-content px-6 py-24 lg:px-8">
-      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-accent">Phase one routing</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-accent">Desk</p>
       <h1 className="mt-3 font-heading text-4xl font-bold text-ink">{title}</h1>
       <p className="mt-4 max-w-3xl text-base leading-relaxed text-ink-muted">{description}</p>
       {bullets.length > 0 ? (
@@ -32,12 +32,7 @@ export function FutureRoutePlaceholder({
         >
           Place your order
         </Link>
-        <Link
-          href={whatsappHref()}
-          className="rounded-btn border border-brand-primary/30 px-5 py-2.5 text-sm font-semibold text-brand-primary transition hover:border-brand-primary"
-        >
-          WhatsApp the desk
-        </Link>
+        <ContactDirectOrderLink message="Hello, I need help from the ResearchScholars desk." />
         <Link href="/" className="rounded-btn px-5 py-2.5 text-sm font-semibold text-ink-muted hover:text-brand-primary">
           Back to home
         </Link>

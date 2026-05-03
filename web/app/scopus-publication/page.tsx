@@ -121,7 +121,7 @@ export default function ScopusPublicationPage() {
                 <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
               </Link>
               <Link href={whatsappHref("Hello, I need Scopus publication support.")} className="inline-flex h-14 items-center justify-center rounded-btn border border-white/20 px-8 text-sm font-semibold text-white transition-all hover:bg-white/5">
-                WhatsApp consultation
+                Contact directly
               </Link>
             </div>
           </div>
@@ -312,8 +312,7 @@ export default function ScopusPublicationPage() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="bg-brand-deep px-6 py-24 text-white lg:px-8 border-t border-white/10">
+      <section className="border-t border-white/10 bg-brand-deep px-6 py-24 text-white lg:px-8">
         <div className="mx-auto flex max-w-content flex-col items-center text-center gap-8">
           <div>
             <h2 className="font-heading text-4xl md:text-5xl font-bold tracking-tight">Ready to get your paper publication-ready?</h2>
@@ -326,8 +325,8 @@ export default function ScopusPublicationPage() {
               Start publication journey
               <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
             </Link>
-            <Link href={whatsappHref("Hello, I need Scopus publication support.")} className="inline-flex h-14 items-center justify-center rounded-btn border border-white/20 px-8 text-sm font-semibold text-white hover:bg-white/5 transition-all">
-              WhatsApp consultation
+            <Link href={whatsappHref("Hello, I need Scopus publication support.")} className="inline-flex h-14 items-center justify-center rounded-btn border border-white/20 px-8 text-sm font-semibold text-white transition-all hover:bg-white/5">
+              Contact directly
             </Link>
           </div>
         </div>

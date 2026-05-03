@@ -5,8 +5,8 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 
+import { ContactDirectOrderLink } from "@/components/marketing/ContactDirectOrderLink";
 import { heroStatsChips } from "@/lib/data/site-content";
-import { whatsappHref } from "@/lib/site-config";
 
 const container = {
   hidden: { opacity: 0 },
@@ -112,16 +112,18 @@ export function HeroHome() {
 
           <motion.div variants={item} className="flex flex-wrap gap-4">
             <Link
-              href={whatsappHref(
-                "Hello, I would like a structured quote for my academic writing requirement.",
-              )}
-              className="group inline-flex items-center gap-3 rounded-btn bg-gradient-to-r from-emerald-400 to-teal-300 px-6 py-3 text-sm font-bold text-[#042f1a] shadow-[0_12px_40px_-8px_rgba(52,211,153,0.55)] transition duration-500 ease-premium hover:-translate-y-[2px] hover:shadow-[0_16px_48px_-6px_rgba(52,211,153,0.65)]"
+              href="/order"
+              className="group inline-flex items-center gap-3 rounded-btn border border-white/35 bg-white/10 px-6 py-3 text-sm font-bold text-white backdrop-blur-sm transition duration-500 ease-premium hover:-translate-y-[2px] hover:bg-white/15"
             >
-              Get a free quote
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black/10 transition group-hover:translate-x-0.5">
+              Place your order
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 transition group-hover:translate-x-0.5">
                 <ArrowRight className="h-4 w-4" weight="bold" aria-hidden />
               </span>
             </Link>
+            <ContactDirectOrderLink
+              variant="ghostOnDark"
+              message="Hello, I would like a structured quote for my academic writing requirement."
+            />
             <Link
               href="/services"
               className="inline-flex items-center justify-center rounded-btn border border-white/35 bg-white/5 px-6 py-3 text-sm font-semibold text-white backdrop-blur-sm transition hover:border-white/55 hover:bg-white/10"

@@ -4,6 +4,7 @@ import type { OrderServiceType } from "./OrderComposition";
 import { ArrowRight, CheckCircle } from "@phosphor-icons/react";
 import clsx from "clsx";
 import { applyGst, fmtINR } from "@/lib/gst";
+import { ContactDirectOrderLink } from "@/components/marketing/ContactDirectOrderLink";
 
 type PricingPlan = {
   id: string;
@@ -28,13 +29,16 @@ export function OrderSelection({
       <div className="mb-10 lg:mb-16">
         <h1 className="font-heading text-3xl font-bold text-ink md:text-5xl">Select Your Package</h1>
         <p className="mt-4 text-base text-ink-muted md:text-lg">
-          Pick your requested academic support package. Full payment is required at checkout — no partial payments or deposits.
+          Pick your package, submit your details, then confirm your booking with us on WhatsApp. We will align payment and timeline there.
         </p>
         {gstRate > 0 && (
           <p className="mt-2 text-sm text-ink-muted/70">
             All prices include {gstRate}% GST.
           </p>
         )}
+        <div className="mt-6">
+          <ContactDirectOrderLink message="Hello, I would like to place an order on ResearchScholars. Please help me choose a package." />
+        </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -77,7 +81,7 @@ export function OrderSelection({
               </div>
 
               <div className="mt-auto flex w-full items-center justify-between border-t border-surface-line/50 pt-6">
-                <span className="text-sm font-semibold text-brand-primary group-hover:text-brand-deep">Proceed to Checkout</span>
+                <span className="text-sm font-semibold text-brand-primary group-hover:text-brand-deep">Continue to details</span>
                 <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-light/40 text-brand-primary transition group-hover:bg-brand-primary group-hover:text-white">
                   <ArrowRight className="h-4 w-4" weight="bold" />
                 </span>

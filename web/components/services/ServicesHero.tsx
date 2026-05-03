@@ -4,11 +4,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "@phosphor-icons/react";
 
+import { ContactDirectOrderLink } from "@/components/marketing/ContactDirectOrderLink";
+
 export function ServicesHero() {
   return (
     <section className="relative overflow-hidden bg-brand-deep text-white pt-24 pb-20 lg:pt-32 lg:pb-28">
       {/* Background Image / Overlay */}
-      <div className="absolute inset-0 pointer-events-none">
+      <div className="pointer-events-none absolute inset-0">
         <Image
           src="/images/about-hero.png"
           alt="Library and academic architecture"
@@ -26,7 +28,7 @@ export function ServicesHero() {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-light opacity-75"></span>
             <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-light"></span>
           </span>
-          PHASE 1 SERVICES MAP
+          Services map
         </div>
         <h1 className="mx-auto max-w-4xl font-heading text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl text-white">
           Comprehensive Academic Support — At Every Stage
@@ -34,14 +36,18 @@ export function ServicesHero() {
         <p className="mx-auto mt-6 max-w-2xl text-lg text-white/80 leading-relaxed font-medium">
           Whether you are submitting your first university assignment or targeting a Scopus-indexed journal — we have a verified PhD scholar for every stage of your research journey.
         </p>
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Link
             href="/order"
-            className="group inline-flex items-center gap-2 rounded-btn bg-brand-light px-6 py-3.5 text-base font-semibold text-brand-deep transition shadow-cardHover hover:bg-white hover:-translate-y-[1px]"
+            className="group inline-flex items-center gap-2 rounded-btn bg-brand-light px-6 py-3.5 text-base font-semibold text-brand-deep shadow-cardHover transition hover:-translate-y-[1px] hover:bg-white"
           >
             Explore Order Options
             <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" weight="bold" />
           </Link>
+          <ContactDirectOrderLink
+            variant="ghostOnDark"
+            message="Hello, I would like to explore services and place an order on ResearchScholars."
+          />
         </div>
       </div>
     </section>

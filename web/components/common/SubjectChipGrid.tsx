@@ -25,7 +25,6 @@ export function SubjectChipGrid({ fields }: { fields: string[] }) {
             key={field}
             className="inline-flex items-center gap-2 rounded-full border border-brand-primary/25 bg-brand-light/40 px-4 py-2 text-xs font-semibold text-brand-deep"
           >
-            {/* TODO: replace with subject-specific Phosphor icon */}
             <Icon className="h-4 w-4" />
             {field}
           </span>

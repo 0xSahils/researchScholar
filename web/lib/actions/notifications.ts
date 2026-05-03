@@ -3,6 +3,8 @@
 import { Resend } from "resend";
 import twilio from "twilio";
 
+import { siteConfig } from "@/lib/site-config";
+
 // ─── Clients (lazy-init so they don't crash at build time without env vars) ───
 
 function getResend() {
@@ -284,12 +286,12 @@ function orderConfirmationHtml(order: OrderNotificationData): string {
     <p style="color:#555;font-size:14px;line-height:1.6">Your request has been received and our scholar allocation desk is reviewing it. You will hear from us within a few hours on working days.</p>
     <div class="row"><span class="label">Order No.</span><span class="value" style="font-family:monospace">${order.orderNo}</span></div>
     <div class="row"><span class="label">Service</span><span class="value">${order.service}</span></div>
-    <div class="row"><span class="label">Amount Paid</span><span class="value total">₹${order.price.toLocaleString("en-IN")}</span></div>
+    <div class="row"><span class="label">Quoted total</span><span class="value total">₹${order.price.toLocaleString("en-IN")}</span></div>
     <div style="text-align:center;margin-top:24px">
       <a href="https://researchscholars.online/track-order" class="track-btn">Track Your Order →</a>
     </div>
     <p style="color:#888;font-size:13px;margin-top:32px;border-top:1px solid #eee;padding-top:16px;">
-      For any queries, please write to our contact on WhatsApp.
+      Questions? WhatsApp ${siteConfig.phoneDisplay} or email <a href="mailto:${siteConfig.email}" style="color:#1B5E20">${siteConfig.email}</a>.
     </p>
   </div>
   <div class="footer">ResearchScholars.online · PhD-led academic support</div>
@@ -340,7 +342,7 @@ function manualOrderConfirmationHtml(order: ManualOrderConfirmationData): string
       <a href="https://researchscholars.online/track-order" class="track-btn">Track Your Order →</a>
     </div>
     <p style="color:#888;font-size:13px;margin-top:32px;border-top:1px solid #eee;padding-top:16px;">
-      For any queries, please write to our contact on WhatsApp.
+      Questions? WhatsApp ${siteConfig.phoneDisplay} or email <a href="mailto:${siteConfig.email}" style="color:#1B5E20">${siteConfig.email}</a>.
     </p>
   </div>
   <div class="footer">ResearchScholars.online · PhD-led academic support</div>
@@ -413,7 +415,7 @@ function deliveryEmailHtml(
     </div>
     <p style="color:#888;font-size:13px;margin-top:24px;">If the button doesn't work, copy this link: <br><a href="${fileUrl}" style="word-break:break-all;color:#1B5E20">${fileUrl}</a></p>
     <p style="color:#888;font-size:13px;margin-top:24px;border-top:1px solid #eee;padding-top:16px;">
-      Need revisions within your plan scope or have any queries? Please write to our contact on WhatsApp.
+      Need revisions within your plan scope or have questions? WhatsApp ${siteConfig.phoneDisplay} or email <a href="mailto:${siteConfig.email}" style="color:#1B5E20">${siteConfig.email}</a>.
     </p>
   </div>
   <div class="footer">ResearchScholars.online · PhD-led academic support</div>
@@ -458,7 +460,7 @@ function orderStatusUpdateHtml(order: OrderNotificationData, newStatus: string):
     </div>
 
     <p style="color:#888;font-size:13px;margin-top:32px;border-top:1px solid #eee;padding-top:16px;">
-      For any queries, please write to our contact on WhatsApp.
+      Questions? WhatsApp ${siteConfig.phoneDisplay} or email <a href="mailto:${siteConfig.email}" style="color:#1B5E20">${siteConfig.email}</a>.
     </p>
   </div>
   <div class="footer">ResearchScholars.online · PhD-led academic support</div>

@@ -172,7 +172,7 @@ create table if not exists site_settings (
 );
 
 insert into site_settings (gst_rate, advance_percent, whatsapp_number, support_email, working_hours, site_title, site_meta_description)
-select 18, 50, '+919876543210', 'orders@researchscholars.online', 'Mon-Sat 9:00-21:00 IST', 'ResearchScholars.online', 'PhD-led academic support'
+select 18, 50, '+917678182421', 'researchscholars.online@gmail.com', 'Mon-Sat 9:00-21:00 IST', 'ResearchScholars.online', 'PhD-led academic support'
 where not exists (select 1 from site_settings);
 
 create table if not exists blog_categories (

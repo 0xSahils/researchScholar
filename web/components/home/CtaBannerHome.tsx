@@ -38,7 +38,7 @@ export function CtaBannerHome() {
             className="inline-flex items-center gap-2 rounded-full border border-white/40 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
           >
             <WhatsappLogo className="h-5 w-5" weight="fill" aria-hidden />
-            WhatsApp the desk
+            Contact directly
           </Link>
         </div>
       </div>

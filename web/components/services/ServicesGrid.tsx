@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "@phosphor-icons/react";
+import { ContactDirectOrderLink } from "@/components/marketing/ContactDirectOrderLink";
 import { serviceCards } from "@/lib/data/site-content";
 
 export function ServicesGrid() {
@@ -49,15 +50,11 @@ export function ServicesGrid() {
                     {service.title}
                   </h3>
                   
-                  <div className="mt-2 inline-flex self-start rounded-full bg-brand-accent/15 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-brand-deep">
-                    Phase 2 Core Service
-                  </div>
-
                   <p className="mt-4 flex-1 text-sm leading-relaxed text-ink-muted">
                     {service.description}
                   </p>
 
-                  <div className="mt-8 pt-6 border-t border-surface-line/50">
+                  <div className="mt-8 flex flex-col gap-2 border-t border-surface-line/50 pt-6">
                     <Link
                       href={`/order?plan=${service.id}`}
                       className="inline-flex w-full items-center justify-between rounded-btn border border-brand-primary/20 bg-surface-subtle px-4 py-2.5 text-sm font-semibold text-brand-primary transition hover:bg-brand-primary hover:text-white"
@@ -65,6 +62,10 @@ export function ServicesGrid() {
                       Instant Booking
                       <ArrowRight className="h-4 w-4" weight="bold" />
                     </Link>
+                    <ContactDirectOrderLink
+                      className="w-full"
+                      message={`Hello, I want to book ${service.title} on ResearchScholars.`}
+                    />
                   </div>
                 </div>
               </div>

@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
 
 import { BlogContentRenderer } from "@/components/blog/BlogContentRenderer";
+import { ContactDirectOrderLink } from "@/components/marketing/ContactDirectOrderLink";
 import { BlogReadingProgress } from "@/components/blog/BlogReadingProgress";
 import { BlogTableOfContents } from "@/components/blog/BlogTableOfContents";
 import { getAllPublishedSlugs, getBlogBySlug, getPublishedBlogs, incrementBlogView } from "@/lib/actions/blogs";
@@ -119,9 +120,16 @@ export default async function BlogDetailPage({ params }: { params: { slug: strin
           </div>
           <div className="rounded-card bg-brand-deep p-4 text-white">
             <h3 className="font-semibold">Need Help With Your Research?</h3>
-            <Link href="/order" className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-brand-light">
-              Place Your Order <ArrowRight className="h-4 w-4" />
-            </Link>
+            <div className="mt-2 flex flex-col gap-2">
+              <Link href="/order" className="inline-flex items-center gap-1 text-sm font-semibold text-brand-light">
+                Place Your Order <ArrowRight className="h-4 w-4" />
+              </Link>
+              <ContactDirectOrderLink
+                variant="ghostOnDark"
+                size="compact"
+                message="Hello, I need help with my research from ResearchScholars."
+              />
+            </div>
           </div>
         </aside>
       </section>

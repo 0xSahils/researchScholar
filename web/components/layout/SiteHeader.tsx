@@ -98,7 +98,7 @@ export function SiteHeader() {
               href={whatsappHref()}
               className="rounded-btn border border-brand-primary/15 px-4 py-2 text-sm font-semibold text-brand-primary transition hover:border-brand-primary/40"
             >
-              Free quote
+              Contact directly
             </Link>
             <Link
               href="/order"
@@ -122,8 +122,6 @@ export function SiteHeader() {
             <span className="sr-only">Toggle navigation</span>
           </button>
         </div>
-
-        {/* Services Mega Menu deferred to Phase 2 */}
       </header>
 
       <div
@@ -168,7 +166,7 @@ export function SiteHeader() {
               href={whatsappHref()}
               className="rounded-btn border border-brand-primary px-4 py-3 text-center text-brand-primary"
             >
-              WhatsApp a brief
+              Contact directly
             </Link>
           </div>
         </div>

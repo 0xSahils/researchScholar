@@ -3,6 +3,8 @@
 import { ArrowRight } from "@phosphor-icons/react";
 import Link from "next/link";
 
+import { ContactDirectOrderLink } from "@/components/marketing/ContactDirectOrderLink";
+
 export function AboutCtaSection() {
   return (
     <section
@@ -27,6 +29,7 @@ export function AboutCtaSection() {
               <ArrowRight className="h-4 w-4" weight="bold" aria-hidden />
             </span>
           </Link>
+          <ContactDirectOrderLink message="Hello, I would like to place an order with ResearchScholars." />
           <Link
             href="/services"
             className="inline-flex items-center justify-center rounded-btn border border-brand-primary/30 px-6 py-3 text-sm font-semibold text-brand-primary transition hover:border-brand-primary"

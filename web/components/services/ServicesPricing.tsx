@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, CheckCircle } from "@phosphor-icons/react/dist/ssr";
+import { ContactDirectOrderLink } from "@/components/marketing/ContactDirectOrderLink";
 import { pricingData } from "@/lib/data/site-content";
 import { getPublicPricing, getPublicSettings } from "@/lib/actions/admin";
 import { applyGst, fmtINR } from "@/lib/gst";
@@ -31,7 +32,7 @@ export async function ServicesPricing() {
             Transparent pricing. Zero hidden surprises.
           </h2>
           <p className="mt-4 text-sm text-ink-muted">
-            Full payment is collected at checkout. No deposits or partial payments.
+            Choose a package on the order page, then confirm booking with us on WhatsApp. We align payment and delivery there.
             {gstRate > 0 && ` All prices include ${gstRate}% GST.`}
           </p>
         </div>
@@ -50,9 +51,6 @@ export async function ServicesPricing() {
                 key={plan.id}
                 className="group relative flex flex-col md:grid md:grid-cols-[1fr_auto_1fr_auto] items-center gap-4 p-6 transition duration-300 hover:bg-brand-light/10"
               >
-                {/* Mobile shadow link overlay */}
-                <Link href={`/order?plan=${plan.id}`} className="absolute inset-0 z-10 md:hidden" aria-label={`Order ${plan.title}`} />
-
                 <div className="w-full md:w-auto">
                   <div className="flex items-center gap-3">
                     <h3 className="font-heading text-xl font-bold text-ink">{plan.title}</h3>
@@ -77,22 +75,29 @@ export async function ServicesPricing() {
 
                 <div className="w-px hidden md:block" />
 
-                <div className="flex w-full items-center justify-between md:w-auto md:justify-end gap-6 mt-6 md:mt-0 px-0 md:px-6">
+                <div className="relative z-20 mt-6 flex w-full flex-col items-stretch justify-end gap-3 md:mt-0 md:w-auto md:flex-row md:items-end md:justify-end md:gap-4 md:px-6">
                   <div>
                     <p className="font-heading text-2xl font-bold text-ink">{fmtINR(plan.totalPrice)}</p>
                     {gstRate > 0 && (
-                      <p className="text-[11px] text-ink-muted mt-0.5">
+                      <p className="mt-0.5 text-[11px] text-ink-muted">
                         {fmtINR(plan.basePrice)} + {fmtINR(plan.gstAmount)} GST
                       </p>
                     )}
                   </div>
-                  <Link
-                    href={`/order?plan=${plan.id}`}
-                    className="relative z-20 hidden md:inline-flex items-center gap-2 rounded-btn bg-brand-primary px-5 py-2.5 text-sm font-semibold text-white shadow-card transition group-hover:bg-brand-deep group-hover:-translate-y-px group-hover:shadow-cardHover"
-                  >
-                    Place Order
-                    <ArrowRight className="h-4 w-4" weight="bold" />
-                  </Link>
+                  <div className="flex w-full flex-col gap-2 md:w-auto md:flex-row md:items-center">
+                    <Link
+                      href={`/order?plan=${plan.id}`}
+                      className="inline-flex items-center justify-center gap-2 rounded-btn bg-brand-primary px-5 py-2.5 text-sm font-semibold text-white shadow-card transition group-hover:-translate-y-px group-hover:bg-brand-deep group-hover:shadow-cardHover"
+                    >
+                      Place Order
+                      <ArrowRight className="h-4 w-4" weight="bold" />
+                    </Link>
+                    <ContactDirectOrderLink
+                      size="compact"
+                      className="w-full md:w-auto"
+                      message={`Hello, I want to order ${plan.title} on ResearchScholars.`}
+                    />
+                  </div>
                 </div>
               </div>
             ))}

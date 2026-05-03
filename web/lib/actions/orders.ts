@@ -86,6 +86,34 @@ export async function createOrder(input: CreateOrderInput): Promise<CreateOrderR
   }
 }
 
+export async function notifyOrderCreatedForCustomer(orderId: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const db = createAdminClient();
+    const { data: order, error } = await db
+      .from("orders")
+      .select("id, order_no, customer_name, customer_email, customer_phone, service, price, total_amount")
+      .eq("id", orderId)
+      .single();
+    if (error || !order) return { success: false, error: "Order not found" };
+    const price = Number(order.total_amount ?? order.price ?? 0);
+    const payload = {
+      orderNo: order.order_no,
+      orderId: order.id,
+      customerName: order.customer_name,
+      customerEmail: order.customer_email,
+      customerPhone: order.customer_phone ?? undefined,
+      service: order.service,
+      price,
+    };
+    await sendOrderConfirmationEmail(payload);
+    await sendAdminNewOrderAlert(payload);
+    return { success: true };
+  } catch (err) {
+    console.error("[notifyOrderCreatedForCustomer]", err);
+    return { success: false, error: String(err) };
+  }
+}
+
 export async function markOrderPaid(orderId: string, payment: { amount: number; razorpayPaymentId?: string; razorpayOrderId?: string; method?: string }) {
   const db = createAdminClient();
   const { data: order } = await db

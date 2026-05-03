@@ -119,11 +119,10 @@ export function PricingManager({ rows }: { rows: any[] }) {
         </div>
       </div>
 
-      {/* Payment Policy Note */}
       <div className="rounded-2xl border border-yellow-700/30 bg-yellow-900/10 p-5">
         <p className="text-sm font-semibold text-yellow-400">ℹ️ Payment Policy</p>
         <p className="mt-1 text-xs text-yellow-200/60 leading-relaxed">
-          All website orders require <strong>full payment</strong> at checkout via Razorpay. No partial advance or deposit on the website.
+          Public website checkout currently routes customers to <strong>WhatsApp</strong> to confirm booking and payment. Online card checkout via Razorpay is prepared but not active yet.
           Manual/offline orders can have custom payment arrangements from the Orders admin panel.
         </p>
         <a href="/admin/settings" className="mt-3 inline-block text-xs text-brand-accent underline">

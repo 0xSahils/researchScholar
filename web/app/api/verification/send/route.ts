@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import twilio from "twilio";
 import { setOtp } from "@/lib/otp-store";
+import { siteConfig } from "@/lib/site-config";
 
 function randomOtp() {
   return String(Math.floor(100000 + Math.random() * 900000));
@@ -43,7 +44,7 @@ export async function POST(req: NextRequest) {
     <div class="code">${code}</div>
     <p style="color:#777;font-size:13px;margin:0;">This code will expire in 10 minutes.</p>
     <p style="color:#888;font-size:13px;margin-top:40px;border-top:1px solid #eee;padding-top:16px;">
-      For any queries, please write to our contact on WhatsApp.
+      Questions? WhatsApp ${siteConfig.phoneDisplay} or email ${siteConfig.email}
     </p>
   </div>
   <div class="footer">ResearchScholars.online · PhD-led academic support</div>

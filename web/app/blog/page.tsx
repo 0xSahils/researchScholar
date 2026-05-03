@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
 import { FeaturedCarousel } from "@/components/blog/FeaturedCarousel";
+import { ContactDirectOrderLink } from "@/components/marketing/ContactDirectOrderLink";
 
 import { getBlogCategories, getPopularBlogs, getPublishedBlogs } from "@/lib/actions/blogs";
 
@@ -79,7 +80,12 @@ export default async function BlogPage({
           <div className="rounded-card border border-surface-line bg-white p-4">
             <h3 className="font-semibold text-ink">Need Research Help?</h3>
             <p className="mt-2 text-sm text-ink-muted">Talk to a PhD expert and place your order directly.</p>
-            <Link href="/order" className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-brand-primary">Place Your Order <ArrowRight className="h-4 w-4" /></Link>
+            <div className="mt-3 flex flex-col gap-2">
+              <Link href="/order" className="inline-flex items-center gap-1 text-sm font-semibold text-brand-primary">
+                Place Your Order <ArrowRight className="h-4 w-4" />
+              </Link>
+              <ContactDirectOrderLink size="compact" message="Hello, I need research help from ResearchScholars." />
+            </div>
           </div>
         </aside>
       </section>

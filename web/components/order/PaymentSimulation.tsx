@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { ArrowLeft, LockKey, Spinner, Phone, ShieldCheck, CheckCircle } from "@phosphor-icons/react";
+import { ArrowLeft, WhatsappLogo, Spinner, Phone, ShieldCheck, CheckCircle } from "@phosphor-icons/react";
 import type { OrderServiceType } from "./OrderComposition";
-import { motion, AnimatePresence } from "framer-motion";
-import { createOrder, markOrderPaid } from "@/lib/actions/orders";
+import { motion } from "framer-motion";
+import { createOrder, notifyOrderCreatedForCustomer } from "@/lib/actions/orders";
 import { applyGst, fmtINR } from "@/lib/gst";
+import { siteConfig, whatsappHref } from "@/lib/site-config";
 
-// ─── Razorpay types ───────────────────────────────────
+/* ─── Razorpay (disabled until gateway is live) ─────────────────────────────
 declare global {
   interface Window {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -29,7 +30,13 @@ function loadRazorpayScript(): Promise<boolean> {
   });
 }
 
-// ─── Component ────────────────────────────────────────
+When re-enabling: restore Razorpay block in handlePayment, remove notifyOrderCreatedForCustomer + WhatsApp window.open, and import markOrderPaid again.
+──────────────────────────────────────────────────────────────────────────────
+*/
+
+/** Set `true` to show “Verify your email” + Send Code / OTP before submit. */
+const EMAIL_VERIFICATION_ENABLED = false;
+
 export function PaymentSimulation({
   service,
   gstRate,
@@ -43,8 +50,7 @@ export function PaymentSimulation({
 }) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
-  const [processing, setProcessing] = useState(false);
-  const [emailVerified, setEmailVerified] = useState(false);
+  const [emailVerified, setEmailVerified] = useState(!EMAIL_VERIFICATION_ENABLED);
   const [phoneVerified, setPhoneVerified] = useState(true);
   const [emailOtp, setEmailOtp] = useState("");
   const [phoneOtp, setPhoneOtp] = useState("");
@@ -68,12 +74,6 @@ export function PaymentSimulation({
     const fullName  = `${firstName} ${lastName}`.trim();
 
     startTransition(async () => {
-      const loaded = await loadRazorpayScript();
-      if (!loaded) {
-        setError("Failed to load Razorpay. Check your internet connection.");
-        return;
-      }
-
       const orderResult = await createOrder({
         customerName: fullName,
         customerEmail: email,
@@ -84,7 +84,10 @@ export function PaymentSimulation({
         requirements: requirements || undefined,
         paymentStatus: "unpaid",
         workStatus: "pending",
-        verification: { emailVerified, phoneVerified },
+        verification: {
+          emailVerified: EMAIL_VERIFICATION_ENABLED ? emailVerified : true,
+          phoneVerified,
+        },
       });
 
       if (!orderResult.success || !orderResult.orderId || !orderResult.orderNo) {
@@ -94,6 +97,27 @@ export function PaymentSimulation({
 
       const savedOrderId = orderResult.orderId;
       const savedOrderNo = orderResult.orderNo;
+
+      await notifyOrderCreatedForCustomer(savedOrderId);
+
+      const waLines = [
+        `Hi ${siteConfig.legalName}, I submitted my request on the website.`,
+        `Order: ${savedOrderNo}`,
+        `Service: ${service.title}`,
+        `Quoted total: ${fmtINR(total)}`,
+        `Name: ${fullName}`,
+        `Please confirm next steps.`,
+      ];
+      window.open(whatsappHref(waLines.join("\n")), "_blank", "noopener,noreferrer");
+
+      onSuccess(savedOrderNo);
+
+      /* RAZORPAY CHECKOUT (restore when gateway is live)
+      const loaded = await loadRazorpayScript();
+      if (!loaded) {
+        setError("Failed to load Razorpay. Check your internet connection.");
+        return;
+      }
 
       const rzpRes = await fetch("/api/razorpay/create-order", {
         method: "POST",
@@ -163,47 +187,12 @@ export function PaymentSimulation({
         setError(`Payment failed: ${res.error.description}`);
       });
       rzp.open();
+      */
     });
   };
 
   return (
     <>
-      {/* Processing overlay */}
-      <AnimatePresence>
-        {processing && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/95 backdrop-blur-md"
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.1, duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
-              className="flex flex-col items-center gap-6 text-center px-6"
-            >
-              <div className="relative h-20 w-20">
-                <div className="absolute inset-0 rounded-full border-4 border-brand-light" />
-                <div className="absolute inset-0 rounded-full border-4 border-t-brand-primary border-r-transparent border-b-transparent border-l-transparent animate-spin" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <CheckCircle className="h-8 w-8 text-brand-primary" weight="fill" />
-                </div>
-              </div>
-              <div>
-                <h2 className="font-heading text-2xl font-bold text-ink">Confirming your order…</h2>
-                <p className="mt-2 text-sm text-ink-muted">Payment received. Saving your order details.</p>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-ink-muted">
-                <Spinner className="h-4 w-4 animate-spin" />
-                This takes just a moment
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Main card */}
       <section className="relative flex flex-1 items-center justify-center py-12 px-6">
       <div className="absolute inset-0 bg-brand-deep/5 backdrop-blur-3xl z-0 pointer-events-none" />
 
@@ -212,7 +201,6 @@ export function PaymentSimulation({
         animate={{ opacity: 1, y: 0 }}
         className="z-10 w-full max-w-4xl overflow-hidden rounded-[2rem] border border-surface-line bg-white shadow-diffusion flex flex-col md:flex-row"
       >
-        {/* Left pane — Cart Summary */}
         <div className="bg-surface-subtle p-8 md:w-5/12 lg:w-4/12 border-b md:border-b-0 md:border-r border-surface-line/60">
           <button
             onClick={onBack}
@@ -230,7 +218,6 @@ export function PaymentSimulation({
             {service.title} Package
           </h3>
 
-          {/* GST Breakdown */}
           <div className="space-y-2 border-t border-surface-line pt-6">
             <div className="flex justify-between text-sm text-ink-muted">
               <span>Base price</span>
@@ -248,9 +235,8 @@ export function PaymentSimulation({
             </div>
           </div>
 
-          {/* Trust badges */}
           <div className="mt-8 space-y-2">
-            {["Secure Razorpay checkout", "Instant confirmation email", "100% confidential"].map((t) => (
+            {["WhatsApp booking confirmation", "Email confirmation sent", "100% confidential"].map((t) => (
               <div key={t} className="flex items-center gap-2 text-xs text-ink-muted">
                 <ShieldCheck className="h-4 w-4 text-brand-accent flex-shrink-0" weight="fill" />
                 {t}
@@ -259,9 +245,16 @@ export function PaymentSimulation({
           </div>
         </div>
 
-        {/* Right pane — Form */}
         <div className="p-8 md:w-7/12 lg:w-8/12">
           <form onSubmit={handlePayment} className="space-y-5">
+            <p className="rounded-xl border border-brand-primary/20 bg-brand-primary/5 px-4 py-3 text-sm text-ink">
+              Online payment is paused. Submit your details here, then continue on{" "}
+              <strong>WhatsApp {siteConfig.phoneDisplay}</strong> to confirm your booking. You can also email{" "}
+              <a className="font-semibold text-brand-primary underline" href={`mailto:${siteConfig.email}`}>
+                {siteConfig.email}
+              </a>
+              .
+            </p>
             <h2 className="font-heading text-xl font-bold text-ink mb-4">Your Details</h2>
 
             <div className="grid grid-cols-2 gap-4">
@@ -289,7 +282,7 @@ export function PaymentSimulation({
                   <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-muted/40" />
                   <input name="phone" required disabled={isPending} type="tel"
                     className="w-full rounded-lg border border-surface-line/80 bg-white pl-10 pr-4 py-2.5 text-sm outline-none transition focus:border-brand-primary focus:ring-1 focus:ring-brand-primary"
-                    placeholder="+91 98765 43210" />
+                    placeholder="+91 76781 82421" />
                 </div>
               </div>
               <div className="col-span-2">
@@ -312,77 +305,90 @@ export function PaymentSimulation({
               </p>
             )}
 
-            {!emailVerified ? (
-              <div className="rounded-xl border border-brand-primary/20 bg-brand-primary/5 p-4 space-y-3">
-                <div className="flex justify-between items-center text-sm">
-                  <span className="font-semibold text-brand-deep">Verify your email to continue</span>
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      const emailEl = document.querySelector<HTMLInputElement>('input[name="email"]');
-                      if (!emailEl?.value) {
-                         alert("Please enter your email address first.");
-                         return;
-                      }
-                      setEmailForOtp(emailEl.value);
-                      await fetch("/api/verification/send", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "email", value: emailEl.value }) });
-                      setOtpSent(true);
-                      alert("Code sent! Check your inbox.");
-                    }}
-                    className="rounded-lg bg-brand-primary/10 px-3 py-1.5 text-xs font-semibold text-brand-deep hover:bg-brand-primary/20 transition"
-                  >
-                    {otpSent ? "Resend Code" : "Send Code"}
-                  </button>
-                </div>
-                {otpSent && (
-                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="flex gap-2 relative mt-4 pt-2">
-                    <input
-                       value={emailOtp}
-                       onChange={(e) => setEmailOtp(e.target.value)}
-                       placeholder="Enter 6-digit code"
-                       className="w-full rounded-lg border border-surface-line/80 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-brand-primary focus:ring-1 focus:ring-brand-primary"
-                    />
+            {EMAIL_VERIFICATION_ENABLED &&
+              (!emailVerified ? (
+                <div className="space-y-3 rounded-xl border border-brand-primary/20 bg-brand-primary/5 p-4">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="font-semibold text-brand-deep">Verify your email to continue</span>
                     <button
-                       type="button"
-                       className="rounded-lg bg-brand-deep px-4 py-2.5 text-sm font-semibold text-white shadow-card transition hover:bg-brand-primary"
-                       onClick={async () => {
-                          const res = await fetch("/api/verification/verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "email", value: emailForOtp, code: emailOtp }) });
+                      type="button"
+                      onClick={async () => {
+                        const emailEl = document.querySelector<HTMLInputElement>('input[name="email"]');
+                        if (!emailEl?.value) {
+                          alert("Please enter your email address first.");
+                          return;
+                        }
+                        setEmailForOtp(emailEl.value);
+                        await fetch("/api/verification/send", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ type: "email", value: emailEl.value }),
+                        });
+                        setOtpSent(true);
+                        alert("Code sent! Check your inbox.");
+                      }}
+                      className="rounded-lg bg-brand-primary/10 px-3 py-1.5 text-xs font-semibold text-brand-deep transition hover:bg-brand-primary/20"
+                    >
+                      {otpSent ? "Resend Code" : "Send Code"}
+                    </button>
+                  </div>
+                  {otpSent && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      className="relative mt-4 flex gap-2 pt-2"
+                    >
+                      <input
+                        value={emailOtp}
+                        onChange={(e) => setEmailOtp(e.target.value)}
+                        placeholder="Enter 6-digit code"
+                        className="w-full rounded-lg border border-surface-line/80 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-brand-primary focus:ring-1 focus:ring-brand-primary"
+                      />
+                      <button
+                        type="button"
+                        className="rounded-lg bg-brand-deep px-4 py-2.5 text-sm font-semibold text-white shadow-card transition hover:bg-brand-primary"
+                        onClick={async () => {
+                          const res = await fetch("/api/verification/verify", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ type: "email", value: emailForOtp, code: emailOtp }),
+                          });
                           const json = await res.json();
                           if (json.success) setEmailVerified(true);
                           else alert("Invalid or expired code. Please try again.");
-                       }}
-                    >
-                      Verify
-                    </button>
-                  </motion.div>
-                )}
-              </div>
-            ) : (
-              <div className="flex items-center gap-2 text-xs font-medium text-brand-primary bg-brand-primary/5 border border-brand-primary/20 rounded-lg px-4 py-3">
-                <CheckCircle className="h-4 w-4" weight="fill" />
-                Email verified successfully
-              </div>
-            )}
+                        }}
+                      >
+                        Verify
+                      </button>
+                    </motion.div>
+                  )}
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 rounded-lg border border-brand-primary/20 bg-brand-primary/5 px-4 py-3 text-xs font-medium text-brand-primary">
+                  <CheckCircle className="h-4 w-4" weight="fill" />
+                  Email verified successfully
+                </div>
+              ))}
 
             <button
               type="submit"
-              disabled={isPending || !emailVerified || !phoneVerified}
+              disabled={isPending || (EMAIL_VERIFICATION_ENABLED && !emailVerified) || !phoneVerified}
               className="mt-2 flex w-full items-center justify-center gap-2 rounded-btn bg-brand-primary px-6 py-4 text-base font-semibold text-white shadow-card transition hover:bg-brand-deep disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {isPending ? (
                 <>
                   <Spinner className="h-5 w-5 animate-spin" />
-                  Opening Razorpay...
+                  Saving your request…
                 </>
               ) : (
                 <>
-                  <LockKey className="h-5 w-5" weight="bold" />
-                  Pay {fmtINR(total)} via Razorpay
+                  <WhatsappLogo className="h-5 w-5" weight="fill" />
+                  Submit &amp; continue on WhatsApp
                 </>
               )}
             </button>
             <p className="text-center text-xs text-ink-muted">
-              Secured by Razorpay · UPI · Cards · Net Banking
+              WhatsApp {siteConfig.phoneDisplay} · {siteConfig.email}
             </p>
           </form>
         </div>

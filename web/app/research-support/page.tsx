@@ -216,8 +216,8 @@ export default function ResearchSupportPage() {
               Place your order
               <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
             </Link>
-            <Link href={whatsappHref("Hello, I need research support guidance.")} className="inline-flex h-16 items-center justify-center gap-2 rounded-none border border-white/20 px-10 text-sm font-bold uppercase tracking-wide text-white hover:bg-white/5 transition-all">
-              WhatsApp first
+            <Link href={whatsappHref("Hello, I need research support guidance.")} className="inline-flex h-16 items-center justify-center gap-2 rounded-none border border-white/20 px-10 text-sm font-bold uppercase tracking-wide text-white transition-all hover:bg-white/5">
+              Contact directly
             </Link>
           </div>
         </div>

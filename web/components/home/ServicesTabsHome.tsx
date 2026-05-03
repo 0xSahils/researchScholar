@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
+import { ContactDirectOrderLink } from "@/components/marketing/ContactDirectOrderLink";
 import { serviceCards, serviceTabs } from "@/lib/data/site-content";
 
 type ServiceTabId = (typeof serviceTabs)[number]["id"];
@@ -37,8 +38,8 @@ export function ServicesTabsHome() {
               Comprehensive academic support across every milestone of your programme.
             </h2>
             <p className="text-sm leading-relaxed text-ink-muted">
-              Pick your stage to see how we staff, review similarity, and sequence delivery. In
-              phase one, detailed service microsites route through the same governed order desk.
+              Pick your stage to see how we staff, review similarity, and sequence delivery. Every
+              service line routes through the same governed order desk.
             </p>
           </div>
         </div>
@@ -89,13 +90,10 @@ export function ServicesTabsHome() {
                   <span className="rounded-full bg-brand-light px-3 py-1 text-xs font-semibold text-brand-primary">
                     {card.stat}
                   </span>
-                  <span className="rounded-full border border-brand-alert/30 bg-brand-alert/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-alert">
-                    Phase two detail pages
-                  </span>
                 </div>
                 <h3 className="font-heading text-xl font-semibold text-ink">{card.title}</h3>
                 <p className="text-sm leading-relaxed text-ink-muted">{card.description}</p>
-                <div className="mt-auto flex flex-wrap gap-3 pt-2">
+                <div className="mt-auto flex flex-wrap items-center gap-3 pt-2">
                   <Link
                     href="/order"
                     className="inline-flex items-center gap-2 text-sm font-semibold text-brand-primary"
@@ -103,6 +101,10 @@ export function ServicesTabsHome() {
                     Request a quote
                     <ArrowRight className="h-4 w-4" weight="bold" aria-hidden />
                   </Link>
+                  <ContactDirectOrderLink
+                    size="compact"
+                    message={`Hello, I need a quote for ${card.title} on ResearchScholars.`}
+                  />
                   {card.id === "scopus" ? (
                     <Link href="/scopus-publication" className="text-sm font-semibold text-brand-accent">
                       Publication playbook

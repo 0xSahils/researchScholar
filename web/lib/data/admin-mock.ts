@@ -221,7 +221,7 @@ export const mockCustomers: AdminCustomer[] = [
     id: "cust_001",
     name: "Priya Sundaram",
     email: "priya.sundaram@nitk.ac.in",
-    phone: "+91 98765 43210",
+    phone: "+91 76781 82421",
     institution: "NITK Surathkal",
     joinedAt: "2025-04-01T10:00:00Z",
     totalOrders: 1,

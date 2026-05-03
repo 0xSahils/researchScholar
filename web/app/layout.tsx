@@ -22,14 +22,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body className={`${inter.variable} ${nunito.variable} ${dmSerif.variable} ${jetbrains.variable} min-h-[100dvh] bg-surface-cream font-sans text-ink`}>
         <SiteJsonLd />
         <div className="grain-overlay" aria-hidden />
-        {/*
-          ClientConditionalShell:
-          - /admin/* → renders children only (no SiteHeader/Footer)
-          - everything else → full public site chrome
-        */}
-        <ClientConditionalShell>
-          {children}
-        </ClientConditionalShell>
+        <ClientConditionalShell>{children}</ClientConditionalShell>
       </body>
     </html>
   );

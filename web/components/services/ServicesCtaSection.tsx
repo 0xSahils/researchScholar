@@ -20,7 +20,7 @@ export function ServicesCtaSection() {
             className="group inline-flex items-center gap-2 rounded-btn bg-[#25D366] px-6 py-3.5 text-base font-semibold text-white shadow-cardHover transition hover:bg-[#20bd5a] hover:-translate-y-[1px]"
           >
             <WhatsappLogo className="h-5 w-5" weight="fill" />
-            WhatsApp Us Now
+            Contact directly
             <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" weight="bold" />
           </Link>
           <Link

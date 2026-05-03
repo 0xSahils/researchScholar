@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { ContactDirectOrderLink } from "@/components/marketing/ContactDirectOrderLink";
+
 import { challengeCards } from "@/lib/data/site-content";
 
 export function ChallengeHome() {
@@ -61,6 +63,10 @@ export function ChallengeHome() {
           >
             Skip to a scoped quote
           </Link>
+          <ContactDirectOrderLink
+            variant="ghostOnDark"
+            message="Hello, I need a scoped quote for my academic work on ResearchScholars."
+          />
         </div>
       </div>
     </section>
